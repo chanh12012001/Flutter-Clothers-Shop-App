@@ -18,6 +18,7 @@ import 'package:carousel_pro/carousel_pro.dart';
 import 'package:provider/provider.dart';
 import '../model/product.dart';
 import '../widgets/notification_button.dart';
+import 'login.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -161,6 +162,8 @@ class _HomePageState extends State<HomePage> {
           ListTile(
             onTap: () {
               FirebaseAuth.instance.signOut();
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (ctx) => Login()));
             },
             leading: Icon(Icons.exit_to_app),
             title: Text("Đăng xuất"),
