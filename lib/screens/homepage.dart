@@ -8,6 +8,8 @@ import 'package:flutter_shop_app_final/screens/contactus.dart';
 import 'package:flutter_shop_app_final/screens/detailscreen.dart';
 import 'package:flutter_shop_app_final/screens/list_product.dart';
 import 'package:flutter_shop_app_final/screens/profilescreen.dart';
+import 'package:flutter_shop_app_final/screens/searchcategory.dart';
+import 'package:flutter_shop_app_final/screens/searchproduct.dart';
 import 'package:flutter_shop_app_final/widgets/singeproduct.dart';
 
 import '../provider/product_provider.dart';

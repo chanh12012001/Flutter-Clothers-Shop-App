@@ -70,7 +70,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     fontSize: 18,
                     fontWeight: FontWeight.bold),
               ),
-              Text("Description", style: myStyle),
+              Text("Mô tả", style: myStyle),
             ],
           ),
         ],
@@ -80,7 +80,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
   Widget _buildDiscription() {
     return Container(
-      height: 170,
+      height: 250,
       child: Wrap(
         children: <Widget>[
           Text(
@@ -187,7 +187,7 @@ class _DetailScreenState extends State<DetailScreen> {
           height: 10,
         ),
         Text(
-          "Color",
+          "Màu",
           style: myStyle,
         ),
         SizedBox(
@@ -284,11 +284,13 @@ class _DetailScreenState extends State<DetailScreen> {
   }
 
   Widget _buildButtonPart() {
+    productProvider = Provider.of<ProductProvider>(context);
     return Container(
       height: 60,
       child: MyButton(
         name: "Thêm vào giỏ hàng",
         onPressed: () {
+          productProvider.addNotification("Notification");
           getSize();
           getColor();
           productProvider.getCheckOutData(
@@ -360,13 +362,13 @@ class _DetailScreenState extends State<DetailScreen> {
                     SizedBox(
                       height: 15,
                     ),
-                    _buildButtonPart(),
                   ],
                 ),
               ),
             ],
           ),
         ),
+        bottomNavigationBar:_buildButtonPart(),
       ),
     );
   }
