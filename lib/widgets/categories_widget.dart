@@ -58,7 +58,6 @@ class _VendorCategoriesState extends State<VendorCategories> {
                     elevation: 4,
                     child: Container(
                       height: 60,
-                      color: Colors.red,
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -101,6 +100,7 @@ class _VendorCategoriesState extends State<VendorCategories> {
                             )
                           ),
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Center(
                                 child: Image.network(document.data()['image']),
