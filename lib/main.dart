@@ -9,6 +9,7 @@ import 'package:grocery_app_flutter/screens/home_screen.dart';
 import 'package:grocery_app_flutter/screens/landing_screen.dart';
 import 'package:grocery_app_flutter/screens/login_screen.dart';
 import 'package:grocery_app_flutter/screens/map_screen.dart';
+import 'package:grocery_app_flutter/screens/vendor_home_screen.dart';
 import 'package:grocery_app_flutter/screens/welcome_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
         LoginScreen.id : (context) => LoginScreen(),
         LandingScreen.id : (context) => LandingScreen(),
         MainScreen.id : (context) => MainScreen(),
+        VendorHomeScreeen.id : (context) => VendorHomeScreeen(),
       }
     );
   }
