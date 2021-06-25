@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_app_flutter/widgets/categories_widget.dart';
+import 'package:grocery_app_flutter/widgets/products/best_selling_product.dart';
+import 'package:grocery_app_flutter/widgets/products/featured_products.dart';
+import 'package:grocery_app_flutter/widgets/products/recently_added_products.dart';
 import 'package:grocery_app_flutter/widgets/vendor_appbar.dart';
 import 'package:grocery_app_flutter/widgets/vendor_banner.dart';
 import 'package:provider/provider.dart';
@@ -20,10 +23,15 @@ class VendorHomeScreeen extends StatelessWidget {
             VendorAppBar(),
           ];
         },
-        body: Column(
+        body: ListView(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
           children: [
            VendorBanner(),
-            Expanded(child: VendorCategories()),
+            VendorCategories(),
+            RecentlyAddedProduct(),
+            FeaturedProducts(),
+            BestSellingProduct(),
           ],
         ),
       ),
