@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:grocery_app_flutter/screens/product_details_screen.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class ProductCard extends StatelessWidget{
   final DocumentSnapshot document;
@@ -8,7 +10,7 @@ class ProductCard extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    String offer = (((document.data()['price'] - document.data()['comparedPrice'])/document.data()['price'])*100).toStringAsFixed(1);
+    String offer = (((document.data()['comparedPrice'] - document.data()['price'])/document.data()['comparedPrice'])*100).toStringAsFixed(1);
     return Container(
       height: 180,
       width: MediaQuery.of(context).size.width,
@@ -26,12 +28,25 @@ class ProductCard extends StatelessWidget{
                 Material(
                   elevation: 5,
                   borderRadius: BorderRadius.circular(10),
-                  child: SizedBox(
-                    height: 140,
-                    width: 130,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                        child: Image.network(document.data()['productImage'])),
+                  child: InkWell(
+                    onTap: (){
+                      pushNewScreenWithRouteSettings(
+                        context,
+                        settings: RouteSettings(name: ProductDetailScreen.id),
+                        screen: ProductDetailScreen(document: document,),
+                        withNavBar: false,
+                        pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                      );
+                    },
+                    child: SizedBox(
+                      height: 140,
+                      width: 130,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                          child: Hero(
+                            tag: 'product${document.data()['productName']}',
+                              child: Image.network(document.data()['productImage']))),
+                    ),
                   ),
                 ),
                 if(document.data()['comparedPrice'] > 0)
