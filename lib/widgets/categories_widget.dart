@@ -45,6 +45,7 @@ class _VendorCategoriesState extends State<VendorCategories> {
 
     var _storeProvider = Provider.of<StoreProvider>(context);
 
+
     return FutureBuilder(
       future: _services.category.get(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot>snapshot){
@@ -99,6 +100,7 @@ class _VendorCategoriesState extends State<VendorCategories> {
                       InkWell(
                         onTap: (){
                           _storeProvider.selectedCategory(document.data()['name']);
+                          _storeProvider.selectedCategorySub(null);
                           pushNewScreenWithRouteSettings(
                             context,
                             settings: RouteSettings(name: ProductListScreen.id),

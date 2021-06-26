@@ -8,7 +8,7 @@ class ProductCard extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    String offer = (((document.data()['price'] - document.data()['comparedPrice'])/document.data()['price'])*100).toStringAsFixed(0);
+    String offer = (((document.data()['price'] - document.data()['comparedPrice'])/document.data()['price'])*100).toStringAsFixed(1);
     return Container(
       height: 180,
       width: MediaQuery.of(context).size.width,
@@ -34,6 +34,7 @@ class ProductCard extends StatelessWidget{
                         child: Image.network(document.data()['productImage'])),
                   ),
                 ),
+                if(document.data()['comparedPrice'] > 0)
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).primaryColor,

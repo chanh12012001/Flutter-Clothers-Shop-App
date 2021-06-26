@@ -1,22 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:grocery_app_flutter/providers/store_provider.dart';
 import 'package:grocery_app_flutter/services/product_services.dart';
 import 'package:grocery_app_flutter/widgets/products/product_card_widget.dart';
+import 'package:provider/provider.dart';
 class RecentlyAddedProduct extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
     ProductServices _services = ProductServices();
-
+    var _store = Provider.of<StoreProvider>(context);
     return  FutureBuilder<QuerySnapshot>(
-      future: _services.products.where('published',isEqualTo: true).where('collection',isEqualTo: 'Được thêm gần đây').limit(10).get(),
+      future: _services.products.where('published',isEqualTo: true).where('collection',isEqualTo: 'Được thêm gần đây').where('seller.sellerUid',isEqualTo: _store.storedetails['uid']).limit(10).get(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text('Có lỗi xảy ra');
         }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator(),);
+        if (!snapshot.hasData) {
+          return Container();
         }
         if(snapshot.data.docs.isEmpty)
         {
