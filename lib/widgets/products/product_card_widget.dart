@@ -62,7 +62,7 @@ class ProductCard extends StatelessWidget{
                     padding: const EdgeInsets.only(left: 10,right: 10,top: 3,bottom: 3),
                     child:
                       Text(
-                        '-$offer',
+                        '-$offer%',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 12,

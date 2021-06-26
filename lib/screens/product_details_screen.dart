@@ -13,7 +13,7 @@ class ProductDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    var offer = (((document.data()['comparedPrice'] - document.data()['price'])/document.data()['comparedPrice'])*100).toStringAsFixed(1);
+    String offer = (((document.data()['comparedPrice'] - document.data()['price'])/document.data()['comparedPrice'])*100).toStringAsFixed(1);
 
     return Scaffold(
       appBar: AppBar(
@@ -130,7 +130,7 @@ class ProductDetailScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 10,),
-                if(offer>0)
+                if((((document.data()['comparedPrice'] - document.data()['price'])/document.data()['comparedPrice'])*100) > 0)
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.redAccent,
@@ -139,7 +139,7 @@ class ProductDetailScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8,right: 8,top: 3,bottom: 3),
                     child: Text(
-                      '$offer}',
+                      '-$offer%',
                       style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white,fontSize: 12),
                     ),
                   ),
