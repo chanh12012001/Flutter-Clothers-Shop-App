@@ -7,6 +7,8 @@ class ProductCard extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+
+    String offer = (((document.data()['price'] - document.data()['comparedPrice'])/document.data()['price'])*100).toStringAsFixed(0);
     return Container(
       height: 180,
       width: MediaQuery.of(context).size.width,
@@ -19,16 +21,40 @@ class ProductCard extends StatelessWidget{
         padding: const EdgeInsets.only(top: 8, bottom: 8, left: 10, right: 10),
         child: Row(
           children: [
-            Material(
-              elevation: 5,
-              borderRadius: BorderRadius.circular(10),
-              child: SizedBox(
-                height: 140,
-                width: 130,
-                child: ClipRRect(
+            Stack(
+              children: [
+                Material(
+                  elevation: 5,
                   borderRadius: BorderRadius.circular(10),
-                    child: Image.network(document.data()['productImage'])),
-              ),
+                  child: SizedBox(
+                    height: 140,
+                    width: 130,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                        child: Image.network(document.data()['productImage'])),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    )
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10,right: 10,top: 3,bottom: 3),
+                    child:
+                      Text(
+                        '-$offer',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             Padding(
               padding: const EdgeInsets.only(left: 8, top: 5),
