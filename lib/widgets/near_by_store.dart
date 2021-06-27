@@ -9,16 +9,24 @@ import 'package:paginate_firestore/paginate_firestore.dart';
 import 'package:provider/provider.dart';
 
 class NearByStores extends StatefulWidget {
+
+
   @override
   _NearByStoresState createState() => _NearByStoresState();
 }
 
 class _NearByStoresState extends State<NearByStores> {
+
+
+
   StoreServices _storeServices = StoreServices();
   PaginateRefreshedChangeListener refreshedChangeListener = PaginateRefreshedChangeListener();
 
   @override
   Widget build(BuildContext context) {
+
+
+
     final _storeData = Provider.of<StoreProvider>(context);
     _storeData.getUserLocationData(context);
 
@@ -33,13 +41,14 @@ class _NearByStoresState extends State<NearByStores> {
       return distanceInKm.toStringAsFixed(2);
     }
 
+
     return Container(
       color: Colors.white,
       child: StreamBuilder<QuerySnapshot>(
         stream: _storeServices.getNearByStore(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapShot){
           if (!snapShot.hasData) return
-            CircularProgressIndicator();
+            Center(child: CircularProgressIndicator());
           List shopDistance = [];
           for (int i = 0; i <= snapShot.data.docs.length - 1; i++) {
             var distance = Geolocator.distanceBetween(

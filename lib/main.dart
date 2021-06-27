@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:grocery_app_flutter/providers/auth_provider.dart';
 import 'package:grocery_app_flutter/providers/location_provider.dart';
 import 'package:grocery_app_flutter/providers/store_provider.dart';
@@ -9,6 +10,10 @@ import 'package:grocery_app_flutter/screens/home_screen.dart';
 import 'package:grocery_app_flutter/screens/landing_screen.dart';
 import 'package:grocery_app_flutter/screens/login_screen.dart';
 import 'package:grocery_app_flutter/screens/map_screen.dart';
+import 'package:grocery_app_flutter/screens/product_details_screen.dart';
+import 'package:grocery_app_flutter/screens/product_list_screen.dart';
+import 'file:///D:/HK2Nam2/AndroidStudio/Grocery_App_Flutter/lib/widgets/products/product_list.dart';
+import 'package:grocery_app_flutter/screens/vendor_home_screen.dart';
 import 'package:grocery_app_flutter/screens/welcome_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -53,7 +58,12 @@ class MyApp extends StatelessWidget {
         LoginScreen.id : (context) => LoginScreen(),
         LandingScreen.id : (context) => LandingScreen(),
         MainScreen.id : (context) => MainScreen(),
-      }
+        VendorHomeScreeen.id : (context) => VendorHomeScreeen(),
+        ProductListScreen.id : (context) => ProductListScreen(),
+        ProductDetailScreen.id : (context) => ProductDetailScreen(),
+      },
+      builder: EasyLoading.init(
+      ),
     );
   }
 }
