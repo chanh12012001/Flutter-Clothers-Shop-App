@@ -1,11 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_app_flutter/providers/store_provider.dart';
 import 'package:grocery_app_flutter/screens/product_list_screen.dart';
-import 'file:///D:/HK2Nam2/AndroidStudio/Grocery_App_Flutter/lib/widgets/products/product_list.dart';
 import 'package:grocery_app_flutter/services/product_services.dart';
-import 'package:grocery_app_flutter/widgets/products/product_list.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 
