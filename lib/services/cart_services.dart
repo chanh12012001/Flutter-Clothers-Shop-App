@@ -15,6 +15,7 @@ class CartServices{
     return cart.doc(user.uid).collection('products').add({
       'productId' : document.data()['productId'],
       'productName' : document.data()['productName'],
+      'productImage' : document.data()['productImage'],
       'weight' : document.data()['weight'],
       'price' : document.data()['price'],
       'comparedPrice' : document.data()['comparedPrice'],

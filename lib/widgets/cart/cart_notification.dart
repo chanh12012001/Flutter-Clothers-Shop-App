@@ -26,77 +26,86 @@ class _CartNotificationState extends State<CartNotification> {
         document = value;
       });
     });
-    return Container(
-      height: 45,
-      width: MediaQuery.of(context).size.width,
-      color: Colors.green,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 10, right: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text('${_cartProvider.cartQty} sản phẩm',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold
-                        ),
-                      ),
-                      Text(' | ', style: TextStyle( color: Colors.white),),
-                      Text('${_cartProvider.subTotal.toStringAsFixed(1)}',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold
-                        ),
-                      ),
-                    ],
-                  ),
-                  if(document.exists)
-                  Text('Từ ${document.data()['shopName']}',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            InkWell(
-              onTap: (){
-                pushNewScreenWithRouteSettings(
-                  context,
-                  settings: RouteSettings(name: CartScreen.id),
-                  screen: CartScreen(
-                    document: document,
-                  ),
-                  withNavBar: false,
-                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                );
-              },
-              child: Container(
-                child: Row(
+    return Visibility(
+      visible: _cartProvider.cartQty > 0 ? true : false,
+      child: Container(
+        height: 45,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          color: Colors.green,
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(12),
+            topLeft: Radius.circular(12),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 10, right: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Xem giỏ hàng',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      children: [
+                        Text('${_cartProvider.cartQty} sản phẩm',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),
+                        Text(' | ', style: TextStyle( color: Colors.white),),
+                        Text('\$${_cartProvider.subTotal.toStringAsFixed(1)}',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: 5,),
-                    Icon(Icons.shopping_cart_outlined,
-                      color: Colors.white,
+                    if(document.exists)
+                    Text('Từ ${document.data()['shopName']}',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
+              InkWell(
+                onTap: (){
+                  pushNewScreenWithRouteSettings(
+                    context,
+                    settings: RouteSettings(name: CartScreen.id),
+                    screen: CartScreen(
+                      document: document,
+                    ),
+                    withNavBar: false,
+                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                  );
+                },
+                child: Container(
+                  child: Row(
+                    children: [
+                      Text('Xem giỏ hàng',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(width: 5,),
+                      Icon(Icons.shopping_cart_outlined,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

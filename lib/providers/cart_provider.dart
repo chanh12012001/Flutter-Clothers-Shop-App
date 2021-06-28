@@ -11,15 +11,18 @@ class CartProvider with ChangeNotifier{
   double subTotal = 0.0;
   int cartQty = 0;
   QuerySnapshot snapshot;
+  double saving = 0.0;
 
   Future<double>getCartTotal()async{
     var carTotal = 0.0;
+    var saving = 0.0;
      QuerySnapshot snapshot = await _cart.cart.doc(_cart.user.uid).collection('products').get();
     if(snapshot == null){
       return null;
     }
     snapshot.docs.forEach((doc) {
       carTotal = carTotal + doc.data()['total'];
+      saving = saving+((doc.data()['comparedPrice'] - doc.data()['price']) > 0 ? doc.data()['comparedPrice'] - doc.data()['price'] : 0);
     });
 
     this.subTotal = carTotal;
