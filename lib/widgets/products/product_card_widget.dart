@@ -45,7 +45,7 @@ class ProductCard extends StatelessWidget{
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                           child: Hero(
-                            tag: 'product${document.data()['productName']}',
+                            tag: 'products${document.data()['productName']}',
                               child: Image.network(document.data()['productImage']))),
                     ),
                   ),

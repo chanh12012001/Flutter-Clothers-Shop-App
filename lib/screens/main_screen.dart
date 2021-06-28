@@ -4,6 +4,7 @@ import 'package:grocery_app_flutter/screens/favourite_screen.dart';
 import 'package:grocery_app_flutter/screens/home_screen.dart';
 import 'package:grocery_app_flutter/screens/my_orders_screen.dart';
 import 'package:grocery_app_flutter/screens/profile_screen.dart';
+import 'package:grocery_app_flutter/widgets/cart/cart_notification.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class MainScreen extends StatelessWidget {
@@ -54,6 +55,11 @@ class MainScreen extends StatelessWidget {
     }
 
     return Scaffold(
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 56),
+        child: CartNotification(),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: PersistentTabView(
         context,
         navBarHeight: 56,
