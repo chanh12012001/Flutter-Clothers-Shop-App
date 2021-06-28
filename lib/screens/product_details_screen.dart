@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:grocery_app_flutter/widgets/products/bottom_sheet_container.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   static const String id = 'product_details_screen';
@@ -29,67 +30,7 @@ class ProductDetailScreen extends StatelessWidget {
         ],
       ),
 
-      bottomSheet: Container(
-        child: Row(
-          children: [
-            Expanded(
-              child: InkWell(
-                onTap: (){
-                  EasyLoading.show(status: 'Đang thêm vào danh sách yêu thích',);
-                  saveForLater().then((value){
-                    EasyLoading.showSuccess('Thêm vào danh sách yêu thích thành công');
-                  });
-                },
-                child: Container(
-                  height: 56,
-                  color: Colors.grey[800],
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(CupertinoIcons.heart_fill, color: Colors.white,),
-                          SizedBox(width: 10,),
-                          Text('Yêu thích',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                        ],
-                      ),
-                     ),
-                    ),
-                  ),
-                ),
-              ),
-            Expanded(child: Container(
-                height: 56,
-                color: Colors.red[400],
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.shopping_cart, color: Colors.white,),
-                        SizedBox(width: 10,),
-                        Text('Thêm vào giỏ hàng',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      bottomSheet: BottomSheetContainer(document),
 
       body: Padding(
         padding: const EdgeInsets.all(8.0),
