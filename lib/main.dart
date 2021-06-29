@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:grocery_app_flutter/providers/auth_provider.dart';
+import 'package:grocery_app_flutter/providers/cart_provider.dart';
 import 'package:grocery_app_flutter/providers/location_provider.dart';
 import 'package:grocery_app_flutter/providers/store_provider.dart';
+import 'package:grocery_app_flutter/screens/cart_screen.dart';
 import 'package:grocery_app_flutter/screens/home_screen.dart';
 import 'package:grocery_app_flutter/screens/landing_screen.dart';
 import 'package:grocery_app_flutter/screens/login_screen.dart';
@@ -31,6 +33,9 @@ void main() async{
       ChangeNotifierProvider(
         create: (_) => StoreProvider(),
       ),
+      ChangeNotifierProvider(
+        create: (_) => CartProvider(),
+      ),
     ],
     child: MyApp(),
   ),);
@@ -57,6 +62,8 @@ class MyApp extends StatelessWidget {
         VendorHomeScreeen.id : (context) => VendorHomeScreeen(),
         ProductListScreen.id : (context) => ProductListScreen(),
         ProductDetailScreen.id : (context) => ProductDetailScreen(),
+        CartScreen.id : (context) => CartScreen(),
+
       },
       builder: EasyLoading.init(
       ),

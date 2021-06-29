@@ -15,15 +15,17 @@ class CartServices{
     return cart.doc(user.uid).collection('products').add({
       'productId' : document.data()['productId'],
       'productName' : document.data()['productName'],
+      'productImage' : document.data()['productImage'],
       'weight' : document.data()['weight'],
       'price' : document.data()['price'],
       'comparedPrice' : document.data()['comparedPrice'],
       'sku' : document.data()['sku'],
       'qty' : 1,
+      'total' : document.data()['price'],
     });
   }
 
-  Future<void> updateCartQty(docId, qty) async {
+  Future<void> updateCartQty(docId, qty,total) async {
     DocumentReference documentReference = FirebaseFirestore.instance
         .collection('cart')
         .doc(user.uid).collection('products').doc(docId);
@@ -36,7 +38,10 @@ class CartServices{
         throw Exception("sản phẩm không tồn tại trong giỏ hàng!");
       }
 
-      transaction.update(documentReference, {'qty': qty});
+      transaction.update(documentReference, {
+        'qty': qty,
+        'total' : total ,
+      });
 
       return qty;
     })
@@ -67,5 +72,10 @@ class CartServices{
   Future<String> checkSeller() async{
     final snapshot = await cart.doc(user.uid).get();
     return snapshot.exists ? snapshot.data()['shopName'] : null;
+  }
+
+  Future<DocumentSnapshot> getShopName() async{
+    DocumentSnapshot doc = await cart.doc(user.uid).get();
+    return doc;
   }
 }

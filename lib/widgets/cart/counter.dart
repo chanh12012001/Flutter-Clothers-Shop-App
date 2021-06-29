@@ -89,7 +89,8 @@ class _CounterForCardState extends State<CounterForCard> {
                     setState(() {
                       _qty--;
                     });
-                    _cart.updateCartQty(_docId, _qty).then((value) {
+                    var total = _qty * widget.document.data()['price'];
+                    _cart.updateCartQty(_docId, _qty,total).then((value) {
                       setState(() {
                         _updating = false;
                       });
@@ -117,7 +118,8 @@ class _CounterForCardState extends State<CounterForCard> {
                     _updating = true;
                     _qty++;
                   });
-                  _cart.updateCartQty(_docId, _qty).then((value) {
+                  var total = _qty * widget.document.data()['price'];
+                  _cart.updateCartQty(_docId, _qty,total).then((value) {
                     setState(() {
                       _updating = false;
                     });
