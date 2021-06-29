@@ -65,12 +65,12 @@ class _CartScreenState extends State<CartScreen> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[200],
       bottomSheet: Container(
-        height: 160,
+        height: 170,
         color: Colors.blueGrey[900] ,
         child: Column(
           children: [
             Container(
-              height: 100,
+              height: 110,
               color: Colors.white,
               width: MediaQuery.of(context).size.width,
               child: Padding(
