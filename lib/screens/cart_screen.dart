@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:grocery_app_flutter/providers/auth_provider.dart';
 import 'package:grocery_app_flutter/providers/cart_provider.dart';
 import 'package:grocery_app_flutter/providers/location_provider.dart';
 import 'package:grocery_app_flutter/screens/profile_screen.dart';
@@ -61,6 +63,8 @@ class _CartScreenState extends State<CartScreen> {
     var _cartProvider = Provider.of<CartProvider>(context);
     var _payable = _cartProvider.subTotal+deliveryFee-discount;
     final locationData = Provider.of<LocationProvider>(context);
+    var userDetails = Provider.of<AuthProvider>(context);
+    userDetails.getUserDetails();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[200],
@@ -116,7 +120,11 @@ class _CartScreenState extends State<CartScreen> {
                         ),
                       ],
                     ),
-                    Text('$_location, $_address', maxLines: 3,style: TextStyle(color: Colors.grey, fontSize: 12),),
+                    Text(
+                      userDetails.snapshot.data()['firstName']!=null ? '${userDetails.snapshot
+                          .data()['firstName']} ${userDetails.snapshot
+                          .data()['firstName']} : $_location, $_address' : '$_location, $_address', maxLines: 3,
+                      style: TextStyle(color: Colors.grey, fontSize: 12),),
                   ],
                 ),
               ),
@@ -154,26 +162,19 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                         color: Colors.redAccent,
                         onPressed: (){
-                        setState(() {
-                          _checkingUser = true;
-                        });
+                        EasyLoading.show(status: 'Vui lòng đợi...');
                         _userServices.getUserById(user.uid).then((value){
                           if(value.data()['userName'] == null){
-                            setState(() {
-                              _checkingUser = false;
-                            });
+                           EasyLoading.dismiss();
                             pushNewScreenWithRouteSettings(
                                 context,
                                 settings: RouteSettings(name: ProfileScreen.id),
                           screen:  ProfileScreen(),
-                          withNavBar: true,
                           pageTransitionAnimation: PageTransitionAnimation.cupertino,
                             );
                           }
                           else{
-                            _checkingUser = false;
-                          }
-                        });
+                            EasyLoading.dismiss();
                         if(_cartProvider.cod = true)
                           {
                             print('Thanh toán trực tiếp');
@@ -181,6 +182,8 @@ class _CartScreenState extends State<CartScreen> {
                         else{
                           print('Thanh toán trực tuyến');
                         }
+                        }
+                        });
                     }),
                   ],
                 ),
