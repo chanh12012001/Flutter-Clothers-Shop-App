@@ -45,6 +45,7 @@ dependencies:
   map_launcher: ^1.1.2
   expandable_text: ^2.2.0
   flutter_easyloading: ^2.2.2
+  toggle_bar: ^1.0.0
 
 dev_dependencies:
   flutter_test:

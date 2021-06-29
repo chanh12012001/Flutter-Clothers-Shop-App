@@ -64,10 +64,19 @@ class  CartCard extends StatelessWidget {
               child: FittedBox(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('\$${saving.toStringAsFixed(1)}',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
+                  child: Column(
+                    children: [
+                      Text('Tiết kiệm',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text('\$${saving.toStringAsFixed(1)}',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

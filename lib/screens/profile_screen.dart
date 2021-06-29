@@ -4,6 +4,7 @@ import 'package:grocery_app_flutter/screens/welcome_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class ProfileScreen extends StatelessWidget {
+  static const String id = 'profile-screen';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
