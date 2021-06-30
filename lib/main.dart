@@ -11,6 +11,8 @@ import 'package:grocery_app_flutter/screens/login_screen.dart';
 import 'package:grocery_app_flutter/screens/map_screen.dart';
 import 'package:grocery_app_flutter/screens/product_details_screen.dart';
 import 'package:grocery_app_flutter/screens/product_list_screen.dart';
+import 'package:grocery_app_flutter/screens/profile_screen.dart';
+import 'package:grocery_app_flutter/screens/profile_update_screen.dart';
 import 'package:grocery_app_flutter/screens/vendor_home_screen.dart';
 import 'package:grocery_app_flutter/screens/welcome_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -63,6 +65,8 @@ class MyApp extends StatelessWidget {
         ProductListScreen.id : (context) => ProductListScreen(),
         ProductDetailScreen.id : (context) => ProductDetailScreen(),
         CartScreen.id : (context) => CartScreen(),
+        ProfileScreen.id : (context) => ProfileScreen(),
+        UpdateProfile.id : (context) => UpdateProfile(),
 
       },
       builder: EasyLoading.init(

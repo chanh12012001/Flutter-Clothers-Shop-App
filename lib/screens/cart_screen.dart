@@ -1,10 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:grocery_app_flutter/providers/auth_provider.dart';
 import 'package:grocery_app_flutter/providers/cart_provider.dart';
+import 'package:grocery_app_flutter/providers/location_provider.dart';
+import 'package:grocery_app_flutter/screens/profile_screen.dart';
 import 'package:grocery_app_flutter/services/store_services.dart';
+import 'package:grocery_app_flutter/services/user_services.dart';
 import 'package:grocery_app_flutter/widgets/cart/cart_list.dart';
+import 'package:grocery_app_flutter/widgets/cart/cod_toggle.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'map_screen.dart';
 class CartScreen extends StatefulWidget {
   final DocumentSnapshot document;
   static const String id = 'cart_screen';
@@ -16,12 +26,20 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
 
   StoreServices _store = StoreServices();
+  UserServices _userServices = UserServices();
+  User user = FirebaseAuth.instance.currentUser;
   DocumentSnapshot doc;
   var textStyle = TextStyle(color: Colors.grey);
   int discount = 20;
   int deliveryFee = 50;
+  String _location = '';
+  String _address = '';
+  bool _loadng = false;
+  bool _checkingUser = false;
+
   @override
   void initState() {
+    getPrefs();
     _store.getShopDetails(widget.document.data()['sellerUid']).then((value){
       setState(() {
         doc = value;
@@ -29,53 +47,149 @@ class _CartScreenState extends State<CartScreen> {
     });
     super.initState();
   }
+
+  getPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String location = prefs.getString('location');
+    String address = prefs.getString('address');
+    setState(() {
+      _location = location;
+      _address = address;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var _cartProvider = Provider.of<CartProvider>(context);
     var _payable = _cartProvider.subTotal+deliveryFee-discount;
+    final locationData = Provider.of<LocationProvider>(context);
+    var userDetails = Provider.of<AuthProvider>(context);
+    userDetails.getUserDetails();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[200],
       bottomSheet: Container(
-        height: 60,
+        height: 170,
         color: Colors.blueGrey[900] ,
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20, right: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
+        child: Column(
+          children: [
+            Container(
+              height: 110,
+              color: Colors.white,
+              width: MediaQuery.of(context).size.width,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('${_cartProvider.subTotal.toStringAsFixed(1)}',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text('Giao hàng đến địa chỉ này',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: (){
+                            setState(() {
+                              _loadng = true;
+                            });
+                            locationData.getCurrentPosition().then((value){
+                              setState(() {
+                                _loadng = false;
+                              });
+                              if (value != null) {
+                                pushNewScreenWithRouteSettings(
+                                  context,
+                                  settings: RouteSettings(name: MapScreen.id),
+                                  screen: MapScreen(),
+                                  withNavBar: false,
+                                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                );
+                              }else {
+                                setState(() {
+                                  _loadng = false;
+                                });
+                                print('Permission not allowed');
+                              }
+                            });
+                          },
+                          child: _loadng ? CircularProgressIndicator() : Text('Thay đổi',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
                     ),
-                    Text('Đã bao gồm thuế',
-                      style: TextStyle(
-                        color: Colors.green,
-                        fontSize: 10
-                      ),
-                    ),
+                    Text(
+                      userDetails.snapshot.data()['firstName']!=null ? '${userDetails.snapshot
+                          .data()['firstName']} ${userDetails.snapshot
+                          .data()['firstName']} : $_location, $_address' : '$_location, $_address', maxLines: 3,
+                      style: TextStyle(color: Colors.grey, fontSize: 12),),
                   ],
                 ),
-                RaisedButton(
-                  child: Text('Thanh toán',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                    color: Colors.redAccent,
-                    onPressed: (){
-                }),
-              ],
+              ),
             ),
-          ),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('${_cartProvider.subTotal.toStringAsFixed(1)}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text('Đã bao gồm thuế',
+                          style: TextStyle(
+                            color: Colors.green,
+                            fontSize: 10
+                          ),
+                        ),
+                      ],
+                    ),
+                    RaisedButton(
+                      child: _checkingUser ? CircularProgressIndicator() : Text('Thanh toán',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                        color: Colors.redAccent,
+                        onPressed: (){
+                        EasyLoading.show(status: 'Vui lòng đợi...');
+                        _userServices.getUserById(user.uid).then((value){
+                          if(value.data()['userName'] == null){
+                           EasyLoading.dismiss();
+                            pushNewScreenWithRouteSettings(
+                                context,
+                                settings: RouteSettings(name: ProfileScreen.id),
+                          screen:  ProfileScreen(),
+                          pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                            );
+                          }
+                          else{
+                            EasyLoading.dismiss();
+                        if(_cartProvider.cod = true)
+                          {
+                            print('Thanh toán trực tiếp');
+                          }
+                        else{
+                          print('Thanh toán trực tuyến');
+                        }
+                        }
+                        });
+                    }),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
       body: NestedScrollView(
@@ -120,20 +234,29 @@ class _CartScreenState extends State<CartScreen> {
             child: Column(
               children: [
                 if(doc != null)
-                ListTile(
-                  tileColor: Colors.white,
-                  leading: Container(
-                    height: 60,
-                    width: 60,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                        child: Image.network(doc.data()['imageUrl'], fit: BoxFit.cover,)),
+                Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      ListTile(
+                        tileColor: Colors.white,
+                        leading: Container(
+                          height: 60,
+                          width: 60,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                              child: Image.network(doc.data()['imageUrl'], fit: BoxFit.cover,)),
+                        ),
+                        title: Text(doc.data()['shopName']),
+                        subtitle: Text(doc.data()['address'], maxLines: 1, style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),),
+                      ),
+                      CodToggleSwitch(),
+                      Divider(color: Colors.grey[300],),
+                    ],
                   ),
-                  title: Text(doc.data()['shopName']),
-                  subtitle: Text(doc.data()['address'], maxLines: 1, style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),),
                 ),
                 CartList(document: widget.document,),
                 //coupon
@@ -166,9 +289,9 @@ class _CartScreenState extends State<CartScreen> {
                     ),
                   ),
                 ),
-                // //bill and details
+                // bill and details
                 Padding(
-                  padding: const EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.only(right: 4, left: 4, top: 4, bottom: 100),
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: Card(

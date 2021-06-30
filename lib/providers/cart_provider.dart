@@ -12,6 +12,8 @@ class CartProvider with ChangeNotifier{
   int cartQty = 0;
   QuerySnapshot snapshot;
   double saving = 0.0;
+  double distance = 0.0;
+  bool cod = false;
 
   Future<double>getCartTotal()async{
     var carTotal = 0.0;
@@ -22,13 +24,29 @@ class CartProvider with ChangeNotifier{
     }
     snapshot.docs.forEach((doc) {
       carTotal = carTotal + doc.data()['total'];
-      saving = saving+((doc.data()['comparedPrice'] - doc.data()['price']) > 0 ? doc.data()['comparedPrice'] - doc.data()['price'] : 0);
+      saving = saving + ((doc.data()['comparedPrice'] - doc.data()['price']) > 0 ? doc.data()['comparedPrice'] - doc.data()['price'] : 0);
     });
 
     this.subTotal = carTotal;
     this.cartQty = snapshot.size;
     this.snapshot = snapshot;
+    this.saving = saving;
     notifyListeners();
     return carTotal;
+  }
+
+  getDistance(distance){
+    this.distance = distance;
+    notifyListeners();
+  }
+
+  getPaymenMethod(index){
+    if(index==0){
+      this.cod = false;
+      notifyListeners();
+    } else {
+      this.cod =true;
+      notifyListeners();
+    }
   }
 }

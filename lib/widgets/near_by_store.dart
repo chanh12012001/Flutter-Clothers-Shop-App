@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:grocery_app_flutter/constants.dart';
+import 'package:grocery_app_flutter/providers/cart_provider.dart';
 import 'package:grocery_app_flutter/providers/store_provider.dart';
 import 'package:grocery_app_flutter/services/store_services.dart';
 import 'package:paginate_firestore/bloc/pagination_listeners.dart';
@@ -28,6 +30,7 @@ class _NearByStoresState extends State<NearByStores> {
 
 
     final _storeData = Provider.of<StoreProvider>(context);
+    final _cart = Provider.of<CartProvider>(context);
     _storeData.getUserLocationData(context);
 
     String getDistance(location) {
@@ -61,6 +64,10 @@ class _NearByStoresState extends State<NearByStores> {
             shopDistance.add(distanceInKm);
           }
           shopDistance.sort();
+
+          SchedulerBinding.instance.addPostFrameCallback((_) => setState(() {
+            _cart.getDistance(shopDistance[0]);
+          }));
           if (shopDistance[0] > 10) {
             return Container(
               child: Stack(
