@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:grocery_app_flutter/providers/auth_provider.dart';
 import 'package:grocery_app_flutter/providers/cart_provider.dart';
+import 'package:grocery_app_flutter/providers/coupon_provider.dart';
 import 'package:grocery_app_flutter/providers/location_provider.dart';
 import 'package:grocery_app_flutter/screens/profile_screen.dart';
 import 'package:grocery_app_flutter/services/store_services.dart';
 import 'package:grocery_app_flutter/services/user_services.dart';
 import 'package:grocery_app_flutter/widgets/cart/cart_list.dart';
 import 'package:grocery_app_flutter/widgets/cart/cod_toggle.dart';
+import 'package:grocery_app_flutter/widgets/cart/coupon_widget.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,12 +32,14 @@ class _CartScreenState extends State<CartScreen> {
   User user = FirebaseAuth.instance.currentUser;
   DocumentSnapshot doc;
   var textStyle = TextStyle(color: Colors.grey);
-  int discount = 20;
   int deliveryFee = 50;
   String _location = '';
   String _address = '';
   bool _loadng = false;
   bool _checkingUser = false;
+  double discount = 0;
+
+
 
   @override
   void initState() {
@@ -64,11 +68,18 @@ class _CartScreenState extends State<CartScreen> {
     var _payable = _cartProvider.subTotal+deliveryFee-discount;
     final locationData = Provider.of<LocationProvider>(context);
     var userDetails = Provider.of<AuthProvider>(context);
-    userDetails.getUserDetails();
+    var _coupon = Provider.of<CouponProvider>(context);
+    userDetails.getUserDetails().then((value){
+      double subTotal = _cartProvider.subTotal;
+      double discountRate = _coupon.discountRate/100;
+      setState(() {
+        discount = subTotal*discountRate;
+      });
+    });
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[200],
-      bottomSheet: Container(
+      bottomSheet: userDetails.snapshot.data() == null ? Container() : Container(
         height: 170,
         color: Colors.blueGrey[900] ,
         child: Column(
@@ -227,13 +238,12 @@ class _CartScreenState extends State<CartScreen> {
             ),
           ];
         },
-        body: _cartProvider.cartQty > 0 ?  SingleChildScrollView(
+        body: doc == null ? Center(child: CircularProgressIndicator()) : _cartProvider.cartQty > 0 ?  SingleChildScrollView(
           padding: EdgeInsets.only(bottom: 80),
           child: Container(
             padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
             child: Column(
               children: [
-                if(doc != null)
                 Container(
                   color: Colors.white,
                   child: Column(
@@ -260,35 +270,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
                 CartList(document: widget.document,),
                 //coupon
-                Container(
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 10, right: 10, left: 10),
-                    child: Row(
-                      children: [
-                        Expanded(child: SizedBox(
-                          height: 38,
-                          child: TextField(
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              filled: true,
-                              fillColor: Colors.grey[300],
-                              hintText: 'Nhập vào mã giảm giá',
-                              hintStyle: TextStyle(color: Colors.grey)
-                            ),
-                          ),
-                        )),
-                        OutlineButton(
-                          borderSide: BorderSide(color: Colors.grey),
-                            onPressed: (){
-
-                            },
-                            child: Text('Áp dụng')
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                CouponWidget(doc.data()['uid']),
                 // bill and details
                 Padding(
                   padding: const EdgeInsets.only(right: 4, left: 4, top: 4, bottom: 100),
