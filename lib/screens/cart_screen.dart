@@ -8,6 +8,8 @@ import 'package:grocery_app_flutter/providers/cart_provider.dart';
 import 'package:grocery_app_flutter/providers/coupon_provider.dart';
 import 'package:grocery_app_flutter/providers/location_provider.dart';
 import 'package:grocery_app_flutter/screens/profile_screen.dart';
+import 'package:grocery_app_flutter/services/cart_services.dart';
+import 'package:grocery_app_flutter/services/order_services.dart';
 import 'package:grocery_app_flutter/services/store_services.dart';
 import 'package:grocery_app_flutter/services/user_services.dart';
 import 'package:grocery_app_flutter/widgets/cart/cart_list.dart';
@@ -29,6 +31,8 @@ class _CartScreenState extends State<CartScreen> {
 
   StoreServices _store = StoreServices();
   UserServices _userServices = UserServices();
+  OrderServices _orderServices = OrderServices();
+  CartServices _cartServices = CartServices();
   User user = FirebaseAuth.instance.currentUser;
   DocumentSnapshot doc;
   var textStyle = TextStyle(color: Colors.grey);
@@ -79,7 +83,7 @@ class _CartScreenState extends State<CartScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[200],
-      bottomSheet: userDetails.snapshot.data() == null ? Container() : Container(
+      bottomSheet: userDetails.snapshot == null ? Container() : Container(
         height: 170,
         color: Colors.blueGrey[900] ,
         child: Column(
@@ -175,7 +179,7 @@ class _CartScreenState extends State<CartScreen> {
                         onPressed: (){
                         EasyLoading.show(status: 'Vui lòng đợi...');
                         _userServices.getUserById(user.uid).then((value){
-                          if(value.data()['userName'] == null){
+                          if(value.data()['firstName'] == null){
                            EasyLoading.dismiss();
                             pushNewScreenWithRouteSettings(
                                 context,
@@ -185,14 +189,10 @@ class _CartScreenState extends State<CartScreen> {
                             );
                           }
                           else{
-                            EasyLoading.dismiss();
-                        if(_cartProvider.cod = true)
-                          {
-                            print('Thanh toán trực tiếp');
-                          }
-                        else{
-                          print('Thanh toán trực tuyến');
-                        }
+                            EasyLoading.show(status: 'Vui lòng đợi...');
+                            //Todo: payment gateway intergation
+                            _saveOrder(_cartProvider,_payable,_coupon);
+                            EasyLoading.showSuccess('Đơn hàng của bạn đã được xác nhận');
                         }
                         });
                     }),
@@ -295,10 +295,11 @@ class _CartScreenState extends State<CartScreen> {
                                 SizedBox(
                                   height: 10,
                                 ),
+                                if(discount > 0)
                                 Row(
                                   children: [
                                     Expanded(child: Text('Giảm giá', style: textStyle,)),
-                                    Text('\$$discount',
+                                    Text('\$${discount.toStringAsFixed(1)}',
                                       style: textStyle,
                                     ),
                               ],
@@ -351,5 +352,34 @@ class _CartScreenState extends State<CartScreen> {
         ) : Center(child: Text('Giỏ hàng trống. Tiếp tục mua sắm'),),
       ),
     );
+  }
+
+  _saveOrder(CartProvider cartProvider, payable, CouponProvider coupon){
+    _orderServices.saveOrder({
+      'products': cartProvider.cartList,
+      'userId': user.uid,
+      'deliveryFee' : deliveryFee,
+      'total' : payable,
+      'discount' : discount,
+      'cod' : cartProvider.cod,
+      'discountCode' : coupon.document==null ? null : coupon.document.data()['title'],
+      'seller' : {
+        'shopName' : widget.document.data()['shopName'],
+        'sellerId' : widget.document.data()['sellerUId'],
+      },
+      'timetamp' : DateTime.now().toString(),
+      'orderStatus' : 'Đã đặt hàng',
+      'deliveryBoy' : {
+        'name' : '',
+        'phone' : '' ,
+        'location' : '',
+      },
+    }).then((value){
+      _cartServices.deleteCart().then((value){
+        _cartServices.checkData().then((value){
+          Navigator.pop(context);
+        });
+      });
+    });
   }
 }

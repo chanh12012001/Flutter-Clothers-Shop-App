@@ -65,13 +65,13 @@ class _CouponWidgetState extends State<CouponWidget> {
                       onPressed: (){
                         EasyLoading.show(status: 'Đang xác nhận...');
                         _coupon.getCouponDetails(_couponText.text, widget.couponVendor).then((value){
-                          if(value.data()==null){
+                          if(_coupon.document ==null){
                             setState(() {
                               _coupon.discountRate = 0;
                               _visible = false;
                             });
                             EasyLoading.dismiss();
-                            showDialog(_couponText, 'không hợp lệ');
+                            showDialog(_couponText.text, 'không hợp lệ');
                             return;
                           }
                           if(_coupon.expired == false){
@@ -97,10 +97,9 @@ class _CouponWidgetState extends State<CouponWidget> {
               ],
             ),
           ),
-          if(_coupon.document.data()!= null)
           Visibility(
             visible: _visible,
-            child: Padding(
+            child: _coupon.document == null ? Container() : Padding(
               padding: const EdgeInsets.all(8.0),
               child: DottedBorder(
                 child: Padding(
