@@ -365,7 +365,7 @@ class _CartScreenState extends State<CartScreen> {
       'discountCode' : coupon.document==null ? null : coupon.document.data()['title'],
       'seller' : {
         'shopName' : widget.document.data()['shopName'],
-        'sellerId' : widget.document.data()['sellerUId'],
+        'sellerId' : widget.document.data()['uid'],
       },
       'timetamp' : DateTime.now().toString(),
       'orderStatus' : 'Đã đặt hàng',

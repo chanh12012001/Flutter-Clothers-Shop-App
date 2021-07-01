@@ -20,7 +20,7 @@ class _MyOrdersState extends State<MyOrders> {
   int tag = 0;
   List<String> options = [
     'Tất cả đơn hàng', 'Đã đặt hàng' ,'Được xác nhận', 'Đang lấy hàng',
-    'Đang vận chuyển', 'Đã giao',
+    'Đang vận chuyển', 'Đã giao hàng',
   ];
   @override
   Widget build(BuildContext context) {
@@ -105,16 +105,13 @@ class _MyOrdersState extends State<MyOrders> {
                               horizontalTitleGap: 0,
                               leading: CircleAvatar(
                                 radius: 15,
-                                child: Icon(CupertinoIcons.square_list,
-                                  size: 18,
-                                  color: Colors.orangeAccent,
-                                ),
+                                child: _orderServices.statusIcon(document),
                               ),
                               title: Text(
                                 document.data()['orderStatus'],
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors.orangeAccent,
+                                  color: _orderServices.statusColor(document),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -143,6 +140,24 @@ class _MyOrdersState extends State<MyOrders> {
                                     ),
                                   ),
                                 ],
+                              ),
+                            ),
+                            if(document.data()['deliveryBoy']['name'].length > 2)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10,right: 10),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(6),
+                                child: ListTile(
+                                  tileColor: Theme.of(context).primaryColor.withOpacity(.2),
+                                  leading: CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    child: document.data()['deliveryBoy']['image'] == null ? Container() :
+                                    Image.network(document.data()['deliveryBoy']['image'],height: 24,
+                                    ),
+                                  ),
+                                  title: Text(document.data()['deliveryBoy']['name']),
+                                  subtitle: Text(_orderServices.statusComment(document)),
+                                ),
                               ),
                             ),
                             ExpansionTile(
