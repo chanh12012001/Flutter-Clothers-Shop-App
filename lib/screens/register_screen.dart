@@ -10,9 +10,8 @@ class RegisterScreen extends StatelessWidget {
           child: Column(
             children: [
               Hero(
-                tag: 'logo',
-                child: Image.asset('images/logo.png'),
-              ),
+                  tag: 'logo',
+                  child: Image.asset('images/logo.png')),
               TextField(),
               TextField(),
               TextField(),

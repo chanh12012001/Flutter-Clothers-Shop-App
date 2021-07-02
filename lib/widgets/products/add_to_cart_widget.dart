@@ -6,8 +6,8 @@ import 'package:grocery_app_flutter/services/cart_services.dart';
 import 'package:grocery_app_flutter/widgets/cart/counter_widget.dart';
 
 class AddToCartWidget extends StatefulWidget {
-
   final DocumentSnapshot document;
+
   AddToCartWidget(this.document);
 
   @override
@@ -15,7 +15,6 @@ class AddToCartWidget extends StatefulWidget {
 }
 
 class _AddToCartWidgetState extends State<AddToCartWidget> {
-
   CartServices _cart = CartServices();
   User user = FirebaseAuth.instance.currentUser;
   bool _loading = true;
@@ -30,12 +29,13 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
   }
 
   getCartData() async {
-    final snapshot = await _cart.cart.doc(user.uid).collection('products').get();
-    if (snapshot.docs.length == 0){
+    final snapshot =
+    await _cart.cart.doc(user.uid).collection('products').get();
+    if (snapshot.docs.length == 0) {
       setState(() {
         _loading = false;
       });
-    } else{
+    } else {
       setState(() {
         _loading = false;
       });
@@ -44,7 +44,7 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
 
   @override
   Widget build(BuildContext context) {
-
+    //Nếu sản phẩm này tồn tại trong giỏ hàng, cần nhận được thông tin chi tiết
     FirebaseFirestore.instance
         .collection('cart')
         .doc(user.uid)
@@ -52,32 +52,37 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
         .where('productId', isEqualTo: widget.document.data()['productId'])
         .get()
         .then((QuerySnapshot querySnapshot) => {
-            querySnapshot.docs.forEach((doc) {
-              if (doc['productId'] == widget.document.data()['productId']){
-                setState(() {
-                  _exist = true;
-                  _qty = doc['qty'];
-                  _docId = doc.id;
-                });
-              }
-            }),
+      querySnapshot.docs.forEach((doc) {
+        if (doc['productId'] == widget.document.data()['productId']) {
+        //Nghĩa là sản phẩm đã chọn đã tồn tại trong giỏ hàng, vì vậy không cần thêm lại vào giỏ hàng
+          setState(() {
+            _exist = true;
+            _qty = doc['qty'];
+            _docId = doc.id;
+          });
+        }
+      }),
     });
 
-    return  _loading ? Container(
+    return _loading ? Container(
       height: 56,
       child: Center(
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
         ),
       ),
-    ) : _exist ? CounterWidget(document: widget.document, qty: _qty, docId: _docId,) : InkWell(
+    ) : _exist ? CounterWidget(
+      document: widget.document,
+      qty: _qty,
+      docId: _docId,
+    ) : InkWell(
       onTap: () {
-        EasyLoading.show(status: 'Đang thêm vào giỏ hàng..');
+        EasyLoading.show(status: 'Đang theemm vào giỏ hàng');
         _cart.addToCart(widget.document).then((value) {
           setState(() {
-            _exist = true;
+            _exist=true;
           });
-          EasyLoading.showSuccess('Đã thêm vào giở hàng');
+          EasyLoading.showSuccess('Đã thêm vào giỏ hàng');
         });
       },
       child: Container(
@@ -89,8 +94,13 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.shopping_cart, color: Colors.white,),
-                SizedBox(width: 10,),
+                Icon(
+                  Icons.shopping_basket_outlined,
+                  color: Colors.white,
+                ),
+                SizedBox(
+                  width: 10,
+                ),
                 Text('Thêm vào giỏ hàng',
                   style: TextStyle(
                     color: Colors.white,

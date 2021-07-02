@@ -1,8 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:grocery_app_flutter/constants.dart';
 import 'package:grocery_app_flutter/providers/location_provider.dart';
 import 'package:grocery_app_flutter/screens/map_screen.dart';
-import 'package:grocery_app_flutter/screens/welcome_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +12,6 @@ class MyAppBar extends StatefulWidget {
 }
 
 class _MyAppBarState extends State<MyAppBar> {
-
   String _location = '';
   String _address = '';
 
@@ -36,7 +34,6 @@ class _MyAppBarState extends State<MyAppBar> {
   @override
   Widget build(BuildContext context) {
     final locationData = Provider.of<LocationProvider>(context);
-
     return SliverAppBar(
       automaticallyImplyLeading: false,
       elevation: 0.0,
@@ -45,7 +42,7 @@ class _MyAppBarState extends State<MyAppBar> {
       title: FlatButton(
         onPressed: () {
           locationData.getCurrentPosition().then((value){
-            if (value != null) {
+            if (value!=null) {
               pushNewScreenWithRouteSettings(
                 context,
                 settings: RouteSettings(name: MapScreen.id),
@@ -53,67 +50,63 @@ class _MyAppBarState extends State<MyAppBar> {
                 withNavBar: false,
                 pageTransitionAnimation: PageTransitionAnimation.cupertino,
               );
-            }else {
-              print('Permission not allowed');
+            } else {
+              print('Đã xảy ra sự cố');
             }
           });
+
         },
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Flexible(
                   child: Text(
                     _location == null ? 'Địa chỉ chưa thiết lập' : _location,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(color: kTextBlackColor,fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Icon(
                   Icons.edit_outlined,
-                  color: Colors.white,
+                  color: kTextBlackColor,
                   size: 15,
                 ),
               ],
             ),
             Flexible(
-              child: Text(
-                _address == null ? 'Nhấn vào đây để thiết lập địa chỉ giao hàng' : _address,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                ),
-              ),
-            ),
+                child: Text(
+                  _address==null? 'Nhấn vào đây để thiết lập địa chỉ giao hàng' : _address,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: kTextBlackColor,fontSize: 12),
+                )),
           ],
         ),
       ),
-      bottom: PreferredSize(
-        preferredSize: Size.fromHeight(56),
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: TextField(
-            decoration: InputDecoration(
-                hintText: 'Tìm kiếm',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: EdgeInsets.zero,
-                filled: true,
-                fillColor: Colors.white
-            ),
-          ),
-        ),
-      ),
+      // bottom: PreferredSize(
+      //   preferredSize: Size.fromHeight(56),
+      //   child: Padding(
+      //     padding: const EdgeInsets.all(10.0),
+      //     child: TextField(
+      //       decoration: InputDecoration(
+      //         hintText: 'Tìm kiếm',
+      //         prefixIcon: Icon(
+      //           Icons.search,
+      //           color: Colors.grey,
+      //         ),
+      //         border: OutlineInputBorder(
+      //           borderRadius: BorderRadius.circular(3),
+      //           borderSide: BorderSide.none,
+      //         ),
+      //         contentPadding: EdgeInsets.zero,
+      //         filled: true,
+      //         fillColor: Colors.white,
+      //       ),
+      //     ),
+      //   ),
+      // ),
     );
   }
 }

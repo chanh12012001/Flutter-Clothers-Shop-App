@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_app_flutter/providers/store_provider.dart';
 import 'package:grocery_app_flutter/services/product_services.dart';
@@ -11,7 +10,6 @@ class ProductFilterWidget extends StatefulWidget {
 }
 
 class _ProductFilterWidgetState extends State<ProductFilterWidget> {
-
   List _subCatList = [];
   ProductServices _services = ProductServices();
 
@@ -20,14 +18,18 @@ class _ProductFilterWidgetState extends State<ProductFilterWidget> {
     var _store = Provider.of<StoreProvider>(context);
 
     FirebaseFirestore.instance
-        .collection('products').where('category.mainCategory',isEqualTo: _store.SelectedProductCategory)
+        .collection('products')
+        .where('category.mainCategory',
+        isEqualTo: _store.selectedProductCategory)
         .get()
-        .then((QuerySnapshot querySnapshot) {
+        .then((QuerySnapshot querySnapshot) => {
       querySnapshot.docs.forEach((doc) {
-       setState(() {
-         _subCatList.add(doc['category']['subCategory']);
-       });
-      });
+        if(mounted){
+          setState(() {
+            _subCatList.add(doc['category']['subCategory']);
+          });
+        }
+      }),
     });
 
     super.didChangeDependencies();
@@ -35,67 +37,72 @@ class _ProductFilterWidgetState extends State<ProductFilterWidget> {
 
   @override
   Widget build(BuildContext context) {
-
     var _storeData = Provider.of<StoreProvider>(context);
 
     return FutureBuilder<DocumentSnapshot>(
-      future: _services.category.doc(_storeData.SelectedProductCategory).get(),
+      future: _services.category.doc(_storeData.selectedProductCategory).get(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-
         if (snapshot.hasError) {
-          return Text("Có lỗi xảy ra");
+          return Text("Đã xảy ra sự cố");
         }
-        if(!snapshot.hasData)
-          {
-            return Container();
-          }
-          Map<String, dynamic> data = snapshot.data.data() as Map<String, dynamic>;
-          return Container(
-            height: 50,
-            color: Colors.grey,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                SizedBox(width: 10,),
-                ActionChip(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  elevation: 4,
-                    label: Text('Bao gồm ${_storeData.SelectedProductCategory}'),
-                    onPressed: (){
-                      _storeData.selectedCategorySub(null);
+
+        if (!snapshot.hasData) {
+          return Container();
+        }
+
+        Map<String, dynamic> data = snapshot.data.data();
+        return Container(
+          height: 50,
+          color: Colors.grey,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              SizedBox(
+                width: 10,
+              ),
+              ActionChip(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                elevation: 4,
+                label: Text(
+                  'Tất cả ${_storeData.selectedProductCategory}',
+                ),
+                onPressed: () {
+                  _storeData.selectedCategorySub(null);
                 },
-                  backgroundColor: Colors.white,
-                ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: snapshot.data.data().length.bitLength,
-                  physics: ScrollPhysics(),
-                  itemBuilder: (BuildContext context, int num){
-                    return Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child:
-                          _subCatList.contains(data['subCat'][num]['name'])?
-                      ActionChip(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        elevation: 4,
-                        label: Text(data['subCat'][num]['name']),
-                        onPressed: (){
-                          _storeData.selectedCategorySub(data['subCat'][num]['name']);
-                        },
-                        backgroundColor: Colors.white,
-                      ) : Container(),
-                    );
-                  },
-                ),
-              ],
-            ),
-          );
+                backgroundColor: Colors.white,
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                physics: ScrollPhysics(),
+                itemBuilder: (BuildContext context, int index){
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child:
+                    _subCatList.contains(data['subCat'][index]['name'])?
+                    ActionChip(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4)
+                      ),
+                      elevation: 4,
+                      label: Text(
+                        data['subCat'][index]['name'],
+                      ),
+                      onPressed: () {
+                        _storeData.selectedCategorySub(data['subCat'][index]['name']);
+                      },
+                      backgroundColor: Colors.white,
+                    ) : Container(),
+                  );
+                },
+                itemCount: data['subCat'].length,
+              )
+            ],
+          ),
+        );
       },
     );
   }

@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:grocery_app_flutter/providers/auth_provider.dart';
 import 'package:grocery_app_flutter/providers/cart_provider.dart';
 import 'package:grocery_app_flutter/providers/coupon_provider.dart';
 import 'package:grocery_app_flutter/providers/location_provider.dart';
+import 'package:grocery_app_flutter/providers/order_provider.dart';
+import 'package:grocery_app_flutter/screens/main_screen.dart';
+import 'package:grocery_app_flutter/screens/map_screen.dart';
+import 'package:grocery_app_flutter/screens/payment/payment_home.dart';
 import 'package:grocery_app_flutter/screens/profile_screen.dart';
 import 'package:grocery_app_flutter/services/cart_services.dart';
 import 'package:grocery_app_flutter/services/order_services.dart';
@@ -18,37 +21,37 @@ import 'package:grocery_app_flutter/widgets/cart/coupon_widget.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'map_screen.dart';
+
 class CartScreen extends StatefulWidget {
+  static const String id = 'cart-screen';
   final DocumentSnapshot document;
-  static const String id = 'cart_screen';
+
   CartScreen({this.document});
+
   @override
   _CartScreenState createState() => _CartScreenState();
 }
 
 class _CartScreenState extends State<CartScreen> {
-
   StoreServices _store = StoreServices();
-  UserServices _userServices = UserServices();
+  UserServices _userService = UserServices();
   OrderServices _orderServices = OrderServices();
   CartServices _cartServices = CartServices();
   User user = FirebaseAuth.instance.currentUser;
   DocumentSnapshot doc;
   var textStyle = TextStyle(color: Colors.grey);
+
   int deliveryFee = 50;
   String _location = '';
   String _address = '';
-  bool _loadng = false;
+  bool _loading = false;
   bool _checkingUser = false;
   double discount = 0;
-
-
 
   @override
   void initState() {
     getPrefs();
-    _store.getShopDetails(widget.document.data()['sellerUid']).then((value){
+    _store.getShopDetails(widget.document.data()['sellerUid']).then((value) {
       setState(() {
         doc = value;
       });
@@ -69,29 +72,32 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     var _cartProvider = Provider.of<CartProvider>(context);
-    var _payable = _cartProvider.subTotal+deliveryFee-discount;
     final locationData = Provider.of<LocationProvider>(context);
     var userDetails = Provider.of<AuthProvider>(context);
     var _coupon = Provider.of<CouponProvider>(context);
-    userDetails.getUserDetails().then((value){
+    userDetails.getUserDetails().then((value) {
       double subTotal = _cartProvider.subTotal;
-      double discountRate = _coupon.discountRate/100;
-      setState(() {
-        discount = subTotal*discountRate;
-      });
+      double discountRate = _coupon.discountRate / 100;
+      if(mounted){
+        setState(() {
+          discount = subTotal * discountRate;
+        });
+      }
     });
+    var _payable = _cartProvider.subTotal + deliveryFee - discount;
+    final orderProvider = Provider.of<OrderProvider>(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[200],
       bottomSheet: userDetails.snapshot == null ? Container() : Container(
-        height: 170,
-        color: Colors.blueGrey[900] ,
+        height: 140,
+        color: Colors.blueGrey[900],
         child: Column(
           children: [
             Container(
-              height: 110,
-              color: Colors.white,
+              height: 80,
               width: MediaQuery.of(context).size.width,
+              color: Colors.white,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -100,46 +106,57 @@ class _CartScreenState extends State<CartScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: Text('Giao hàng đến địa chỉ này',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          child: Text(
+                            'Gửi đến địa chỉ này: ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                         InkWell(
-                          onTap: (){
+                          onTap: () {
                             setState(() {
-                              _loadng = true;
+                              _loading = true;
                             });
-                            locationData.getCurrentPosition().then((value){
+                            locationData.getCurrentPosition().then((value) {
                               setState(() {
-                                _loadng = false;
+                                _loading = false;
                               });
                               if (value != null) {
                                 pushNewScreenWithRouteSettings(
                                   context,
-                                  settings: RouteSettings(name: MapScreen.id),
+                                  settings:
+                                  RouteSettings(name: MapScreen.id),
                                   screen: MapScreen(),
                                   withNavBar: false,
-                                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                  pageTransitionAnimation:
+                                  PageTransitionAnimation.cupertino,
                                 );
-                              }else {
+                              } else {
                                 setState(() {
-                                  _loadng = false;
+                                  _loading = false;
                                 });
-                                print('Permission not allowed');
+                                print('Không được phép quyền tru cập');
                               }
                             });
                           },
-                          child: _loadng ? CircularProgressIndicator() : Text('Thay đổi',
-                            style: TextStyle(color: Colors.red),
+                          child: _loading
+                              ? Center(child: CircularProgressIndicator())
+                              : Text(
+                            'Thay đổi',
+                            style: TextStyle(
+                                color: Colors.red, fontSize: 12),
                           ),
-                        ),
+                        )
                       ],
                     ),
                     Text(
-                      userDetails.snapshot.data()['firstName']!=null ? '${userDetails.snapshot
-                          .data()['firstName']} ${userDetails.snapshot
-                          .data()['firstName']} : $_location, $_address' : '$_location, $_address', maxLines: 3,
-                      style: TextStyle(color: Colors.grey, fontSize: 12),),
+                      userDetails.snapshot.data()['firstName'] != null
+                          ? '${userDetails.snapshot.data()['firstName']} ${userDetails.snapshot.data()['lastName']} : $_location, $_address'
+                          : '$_location, $_address',
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
                   ],
                 ),
               ),
@@ -154,48 +171,76 @@ class _CartScreenState extends State<CartScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('${_cartProvider.subTotal.toStringAsFixed(1)}',
+                        Text(
+                          '\$${_payable.toStringAsFixed(0)}',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '(Bao gồm tất cả thuế)',
+                          style: TextStyle(
+                            color: Colors.green,
+                            fontSize: 10,
+                          ),
+                        )
+                      ],
+                    ),
+                    RaisedButton(
+                        child: _checkingUser
+                            ? CircularProgressIndicator()
+                            : Text(
+                          'THANH TOÁN',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text('Đã bao gồm thuế',
-                          style: TextStyle(
-                            color: Colors.green,
-                            fontSize: 10
-                          ),
-                        ),
-                      ],
-                    ),
-                    RaisedButton(
-                      child: _checkingUser ? CircularProgressIndicator() : Text('Thanh toán',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
                         color: Colors.redAccent,
-                        onPressed: (){
-                        EasyLoading.show(status: 'Vui lòng đợi...');
-                        _userServices.getUserById(user.uid).then((value){
-                          if(value.data()['firstName'] == null){
-                           EasyLoading.dismiss();
-                            pushNewScreenWithRouteSettings(
+                        onPressed: () {
+                          EasyLoading.show(status: 'Vui lòng đợi...');
+                          _userService.getUserById(user.uid).then((value) {
+                            if (value.data()['firstName'] == null) {
+                              EasyLoading.dismiss();
+                              //Cần xác nhận tên người dùng trước khi đặt hàng
+                              pushNewScreenWithRouteSettings(
                                 context,
-                                settings: RouteSettings(name: ProfileScreen.id),
-                          screen:  ProfileScreen(),
-                          pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                            );
-                          }
-                          else{
-                            EasyLoading.show(status: 'Vui lòng đợi...');
-                            //Todo: payment gateway intergation
-                            _saveOrder(_cartProvider,_payable,_coupon);
-                            EasyLoading.showSuccess('Đơn hàng của bạn đã được xác nhận');
-                        }
-                        });
-                    }),
+                                settings:
+                                RouteSettings(name: ProfileScreen.id),
+                                screen: ProfileScreen(),
+                                pageTransitionAnimation:
+                                PageTransitionAnimation.cupertino,
+                              );
+                            } else {
+                              EasyLoading.dismiss();
+                              if (_cartProvider.cod == false) {
+                                //thanh toán trực tuyến
+                                orderProvider.totalAmount(
+                                  _payable,
+                                  widget.document.data()['shopName'],
+                                  userDetails.snapshot.data()['email'],
+                                );
+                                Navigator.pushNamed(context, PaymentHome.id).whenComplete((){
+                                  if (orderProvider.success == true) {
+                                    _saveOrder(
+                                      _cartProvider,
+                                      _payable,
+                                      _coupon, orderProvider,
+                                    );
+                                  }
+                                });
+
+                              } else {
+                                //Thanh toán khi nhận hàng
+                                _saveOrder(
+                                  _cartProvider,
+                                  _payable,
+                                  _coupon, orderProvider,
+                                );
+                              }
+                            }
+                          });
+                        }),
                   ],
                 ),
               ),
@@ -204,8 +249,8 @@ class _CartScreenState extends State<CartScreen> {
         ),
       ),
       body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBozIsSxrolled){
-          return[
+        headerSliverBuilder: (BuildContext context, bool innerBozIsSxrolled) {
+          return [
             SliverAppBar(
               floating: true,
               snap: true,
@@ -214,31 +259,28 @@ class _CartScreenState extends State<CartScreen> {
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.document.data()['shopName'],
+                  Text(
+                    widget.document.data()['shopName'],
                     style: TextStyle(fontSize: 16),
                   ),
                   Row(
                     children: [
-                      Text('${_cartProvider.cartQty} sản phẩm',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
-                        ),
+                      Text(
+                        '${_cartProvider.cartQty} ${_cartProvider.cartQty > 1 ? 'Items, ' : 'Item, '}',
+                        style: TextStyle(fontSize: 10, color: Colors.grey),
                       ),
-                      Text('Tổng tiền: \$${_cartProvider.subTotal.toStringAsFixed(1)}',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey,
-                        ),
+                      Text(
+                        'Trả :  ${_payable.toStringAsFixed(0)}\đ',
+                        style: TextStyle(fontSize: 10, color: Colors.grey),
                       ),
                     ],
-                  ),
+                  )
                 ],
               ),
             ),
           ];
         },
-        body: doc == null ? Center(child: CircularProgressIndicator()) : _cartProvider.cartQty > 0 ?  SingleChildScrollView(
+        body: doc == null ? Center(child: CircularProgressIndicator()) : _cartProvider.cartQty > 0 ? SingleChildScrollView(
           padding: EdgeInsets.only(bottom: 80),
           child: Container(
             padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -255,91 +297,157 @@ class _CartScreenState extends State<CartScreen> {
                           width: 60,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(4),
-                              child: Image.network(doc.data()['imageUrl'], fit: BoxFit.cover,)),
+                            child: Image.network(
+                              doc.data()['imageUrl'],
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
                         title: Text(doc.data()['shopName']),
-                        subtitle: Text(doc.data()['address'], maxLines: 1, style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),),
+                        subtitle: Text(
+                          doc.data()['address'],
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
                       ),
                       CodToggleSwitch(),
-                      Divider(color: Colors.grey[300],),
+                      Divider(
+                        color: Colors.grey[300],
+                      ),
                     ],
                   ),
                 ),
-                CartList(document: widget.document,),
+                CartList(
+                  document: widget.document,
+                ),
+
                 //coupon
                 CouponWidget(doc.data()['uid']),
-                // bill and details
+
+                //bill details card
                 Padding(
-                  padding: const EdgeInsets.only(right: 4, left: 4, top: 4, bottom: 100),
+                  padding: const EdgeInsets.only(
+                      right: 4, left: 4, top: 4, bottom: 80),
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: Card(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
                           children: [
-                            Text('Chi tiết hóa đơn',style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(height: 10,),
-                            Row(
-                              children: [
-                                Expanded(child: Text('Tổng giá trị', style: textStyle,)),
-                                Text('\$${_cartProvider.subTotal.toStringAsFixed(1)}',
-                                  style: textStyle,
-                                ),
-                                ],
-                            ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                if(discount > 0)
-                                Row(
-                                  children: [
-                                    Expanded(child: Text('Giảm giá', style: textStyle,)),
-                                    Text('\$${discount.toStringAsFixed(1)}',
-                                      style: textStyle,
-                                    ),
-                              ],
+                            Text(
+                              'Chi tiết hóa đơn',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             SizedBox(
                               height: 10,
                             ),
                             Row(
                               children: [
-                                Expanded(child: Text('Phí vận chuyển', style: textStyle,)),
-                                Text('\$$deliveryFee',
+                                Expanded(
+                                  child: Text(
+                                    'Giỏ hàng',
+                                    style: textStyle,
+                                  ),
+                                ),
+                                Text(
+                                    '${_cartProvider.subTotal.toStringAsFixed(0)}\đ',
+                                    style: textStyle),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            if (discount > 0)
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      'Giảm giá',
+                                      style: textStyle,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${discount.toStringAsFixed(0)}\đ',
+                                    style: textStyle,
+                                  ),
+                                ],
+                              ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Phí vận chuyển',
+                                    style: textStyle,
+                                  ),
+                                ),
+                                Text(
+                                  '$deliveryFee \đ',
                                   style: textStyle,
                                 ),
                               ],
                             ),
-                            Divider(color: Colors.grey,),
+                            Divider(
+                              color: Colors.grey,
+                            ),
                             Row(
                               children: [
-                                Expanded(child: Text('Tổng chi phí', style: TextStyle(fontWeight: FontWeight.bold),)),
-                                Text('\$${_payable.toStringAsFixed(1)}',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                                SizedBox(height: 10,),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(4),
-                                    color: Theme.of(context).primaryColor.withOpacity(.3),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      children: [
-                                        Expanded(child: Text('Giảm',style: TextStyle(color: Colors.green),)),
-                                        Text('\$${_cartProvider.saving.toStringAsFixed(1)}',style: TextStyle(color: Colors.green),),
-                                      ],
+                                Expanded(
+                                  child: Text(
+                                    'Tổng tiền thanh toán',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
+                                Text(
+                                  '${_payable.toStringAsFixed(0)}\đ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                BorderRadius.circular(4),
+                                color: Theme.of(context).primaryColor.withOpacity(.3),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        'Tổng tiết kiệm',
+                                        style: TextStyle(
+                                            color: Colors.green),
+                                      ),
+                                    ),
+                                    Text(
+                                      '${_cartProvider.saving.toStringAsFixed(0)}\đ',
+                                      style: TextStyle(
+                                        color: Colors.green,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -349,35 +457,42 @@ class _CartScreenState extends State<CartScreen> {
               ],
             ),
           ),
-        ) : Center(child: Text('Giỏ hàng trống. Tiếp tục mua sắm'),),
+        ) : Center(
+          child: Text('Giỏ hàng trống, tiếp tục mua hàng'),
+        ),
       ),
     );
   }
 
-  _saveOrder(CartProvider cartProvider, payable, CouponProvider coupon){
+  _saveOrder(CartProvider cartProvider, payable, CouponProvider coupon,
+      OrderProvider orderProvider,) {
     _orderServices.saveOrder({
       'products': cartProvider.cartList,
       'userId': user.uid,
-      'deliveryFee' : deliveryFee,
-      'total' : payable,
-      'discount' : discount,
-      'cod' : cartProvider.cod,
-      'discountCode' : coupon.document==null ? null : coupon.document.data()['title'],
-      'seller' : {
-        'shopName' : widget.document.data()['shopName'],
-        'sellerId' : widget.document.data()['uid'],
+      'deliveryFee': deliveryFee,
+      'total': payable,
+      'discount': discount.toStringAsFixed(0),
+      'cod': cartProvider.cod, //Nhận thanh toán tiền mặt khi giao hàng hay không,
+      'discountCode':
+      coupon.document == null ? null : coupon.document.data()['title'],
+      'seller': {
+        'shopName': widget.document.data()['shopName'],
+        'sellerId': widget.document.data()['sellerUid'],
       },
-      'timetamp' : DateTime.now().toString(),
-      'orderStatus' : 'Đã đặt hàng',
-      'deliveryBoy' : {
-        'name' : '',
-        'phone' : '' ,
-        'location' : '',
+      'timestamp': DateTime.now().toString(),
+      'orderStatus': 'Đã đặt hàng',
+      'deliveryBoy': {
+        'name': '',
+        'phone': '',
+        'location': '',
       },
-    }).then((value){
-      _cartServices.deleteCart().then((value){
-        _cartServices.checkData().then((value){
-          Navigator.pop(context);
+    }).then((value) {
+      orderProvider.success = false;
+      _cartServices.deleteCart().then((value) {
+        _cartServices.checkData().then((value) {
+          cartProvider.clearCart();
+          EasyLoading.showSuccess('Đơn đặt hàng của bạn đã được gửi');
+          Navigator.pushReplacementNamed(context, MainScreen.id);
         });
       });
     });

@@ -6,6 +6,7 @@ import 'package:grocery_app_flutter/services/user_services.dart';
 
 class UpdateProfile extends StatefulWidget {
   static const String id = 'update-profile';
+
   @override
   _UpdateProfileState createState() => _UpdateProfileState();
 }
@@ -42,35 +43,41 @@ class _UpdateProfileState extends State<UpdateProfile> {
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Cập nhật thông tin',style: TextStyle(color: Colors.white),),
+        title: Text(
+          'Cập nhật hồ sơ',
+          style: TextStyle(color: Colors.white),
+        ),
         iconTheme: IconThemeData(color: Colors.white),
       ),
       bottomSheet: InkWell(
         onTap: (){
-         if(_formKey.currentState.validate()){
-           EasyLoading.show(status: 'Đang cập nhật hồ sơ...');
-           updateProfile().then((value){
-             EasyLoading.showSuccess('Cập nhật thành công');
-             Navigator.pop(context);
-           });
-         }
+          if(_formKey.currentState.validate()){
+            EasyLoading.show(status: 'Đang cập nhật hồ sơ...');
+            updateProfile().then((value){
+              EasyLoading.showSuccess('Cập nhật thành công');
+              Navigator.pop(context);
+            });
+          }
         },
         child: Container(
           width: double.infinity,
-          height: 60,
+          height: 56,
           color: Colors.blueGrey[900],
           child: Center(
-              child: Text('Cập nhật',
-                style: TextStyle(color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+            child: Text(
+              'Cập nhật',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
               ),
-              ),
+            ),
           ),
         ),
       ),
@@ -85,38 +92,32 @@ class _UpdateProfileState extends State<UpdateProfile> {
                   Expanded(child: TextFormField(
                     controller: firstName,
                     decoration: InputDecoration(
-                      labelText: 'Họ và tên đệm',
-                      labelStyle: TextStyle(
-                        color: Colors.grey,
-                      ),
-                      contentPadding: EdgeInsets.zero,
+                        labelText: 'Tên',
+                        labelStyle: TextStyle(color: Colors.grey),
+                        contentPadding: EdgeInsets.zero
                     ),
                     validator: (value){
                       if(value.isEmpty){
-                        return 'Điền vào họ và tên đệm';
+                        return 'Vui lòng nhập tên';
                       }
                       return null;
                     },
-                  ),
-                  ),
+                  ),),
                   SizedBox(width: 20,),
                   Expanded(child: TextFormField(
                     controller: lastName,
                     decoration: InputDecoration(
-                      labelText: 'Tên',
-                      labelStyle: TextStyle(
-                        color: Colors.grey,
-                      ),
-                      contentPadding: EdgeInsets.zero,
+                        labelText: 'Họ',
+                        labelStyle: TextStyle(color: Colors.grey),
+                        contentPadding: EdgeInsets.zero
                     ),
                     validator: (value){
                       if(value.isEmpty){
-                        return 'Điền vào tên';
+                        return 'Vui lòng nhập họ';
                       }
                       return null;
                     },
-                  ),
-                  ),
+                  ),),
                 ],
               ),
               SizedBox(width: 40,),
@@ -124,26 +125,22 @@ class _UpdateProfileState extends State<UpdateProfile> {
                 controller: mobile,
                 enabled: false,
                 decoration: InputDecoration(
-                  labelText: 'Số điện thoại',
-                  labelStyle: TextStyle(
-                    color: Colors.grey,
-                  ),
-                  contentPadding: EdgeInsets.zero,
+                    labelText: 'Số điện thoại',
+                    labelStyle: TextStyle(color: Colors.grey),
+                    contentPadding: EdgeInsets.zero
                 ),
               ),
               SizedBox(width: 40,),
               TextFormField(
                 controller: email,
                 decoration: InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: TextStyle(
-                    color: Colors.grey,
-                  ),
-                  contentPadding: EdgeInsets.zero,
+                    labelText: 'Email',
+                    labelStyle: TextStyle(color: Colors.grey),
+                    contentPadding: EdgeInsets.zero
                 ),
                 validator: (value){
                   if(value.isEmpty){
-                    return 'Điền vào email';
+                    return 'Vui lòng nhập Email';
                   }
                   return null;
                 },

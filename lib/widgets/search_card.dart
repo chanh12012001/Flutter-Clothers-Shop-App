@@ -1,30 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:grocery_app_flutter/constants.dart';
+import 'package:grocery_app_flutter/models/product_model.dart';
 import 'package:grocery_app_flutter/screens/product_details_screen.dart';
 import 'package:grocery_app_flutter/widgets/cart/counter.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
-class ProductCard extends StatelessWidget {
+class SearchCard extends StatelessWidget {
+  const SearchCard({
+    Key key,
+    @required this.offer,
+    @required this.product,
+    @required this.document,
+  }) : super(key: key);
 
+  final String offer;
+  final Product product;
   final DocumentSnapshot document;
-  ProductCard(this.document);
 
   @override
   Widget build(BuildContext context) {
-
-    String offer = ((document.data()['comparedPrice'] - document.data()['price'])/document.data()['comparedPrice']*100).toStringAsFixed(0);
-
     return Container(
       height: 160,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
           border: Border(
-              bottom: BorderSide(width: 1, color: Colors.grey[300])
-          )
-      ),
+              bottom: BorderSide(
+                  width: 1, color: Colors.grey[300]))),
       child: Padding(
-        padding: const EdgeInsets.only(top: 8, bottom: 8, left: 10, right: 10),
+        padding: const EdgeInsets.only(
+            top: 8, bottom: 8, left: 10, right: 10),
         child: Row(
           children: [
             Stack(
@@ -33,42 +37,50 @@ class ProductCard extends StatelessWidget {
                   elevation: 5,
                   borderRadius: BorderRadius.circular(10),
                   child: InkWell(
-                    onTap: (){
+                    onTap: () {
                       pushNewScreenWithRouteSettings(
                         context,
                         settings: RouteSettings(name: ProductDetailsScreen.id),
-                        screen: ProductDetailsScreen(document: document,),
+                        screen: ProductDetailsScreen(document: product.document,),
                         withNavBar: false,
-                        pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                        pageTransitionAnimation:
+                        PageTransitionAnimation.cupertino,
                       );
                     },
                     child: SizedBox(
                       height: 140,
                       width: 130,
                       child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius:
+                          BorderRadius.circular(10),
                           child: Hero(
-                              tag: 'Sản phẩm${document.data()['productName']}',
-                              child: Image.network(document.data()['productImage']))),
+                              tag:
+                              'product${product.document.data()['productName']}',
+                              child: Image.network(product.document.data()['productImage']))),
                     ),
                   ),
                 ),
-                if(document.data()['comparedPrice'] > 0)
+                if (product.document.data()['comparedPrice'] > 0)
                   Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10),
+                        bottomRight:
+                        Radius.circular(10),
                       ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 10, right: 10, top: 3, bottom: 3),
-                      child: Text('$offer %OFF',
+                      padding: const EdgeInsets.only(
+                          left: 10,
+                          right: 10,
+                          top: 3,
+                          bottom: 3),
+                      child: Text(
+                        '$offer %OFF',
                         style: TextStyle(
-                          color: kTextBlackColor,
-                          fontSize: 12,
-                        ),
+                            color: Colors.white,
+                            fontSize: 12),
                       ),
                     ),
                   )
@@ -78,35 +90,40 @@ class ProductCard extends StatelessWidget {
               padding: const EdgeInsets.only(left: 8, top: 5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment:
+                      CrossAxisAlignment.start,
                       children: [
                         Text(
-                          document.data()['brand'],
+                          product.document.data()['brand'],
                           style: TextStyle(fontSize: 10),
                         ),
                         SizedBox(
                           height: 6,
                         ),
                         Text(
-                          document.data()['productName'],
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          product.document
+                              .data()['productName'],
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold),
                         ),
                         SizedBox(
                           height: 6,
                         ),
                         Container(
                           width: MediaQuery.of(context).size.width - 160,
-                          padding: EdgeInsets.only(top: 10, bottom: 10, left: 6),
+                          padding: EdgeInsets.only(
+                              top: 10, bottom: 10, left: 6),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            color: Colors.grey[200],
-                          ),
+                              borderRadius:
+                              BorderRadius.circular(4),
+                              color: Colors.grey[200]),
                           child: Text(
-                            document.data()['weight'],
+                            product.document.data()['weight'],
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
@@ -120,16 +137,19 @@ class ProductCard extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              '\$${document.data()['price'].toStringAsFixed(
-                                  0)}',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              '${product.document.data()['price'].toStringAsFixed(0)}\đ',
+                              style: TextStyle(
+                                fontWeight:
+                                FontWeight.bold,
+                              ),
                             ),
                             SizedBox(
                               width: 10,
                             ),
-                            if(document.data()['comparedPrice'] > 0)
+                            if (product.document
+                                .data()['comparedPrice'] > 0)
                               Text(
-                                '${document.data()['comparedPrice'].toStringAsFixed(0)}\đ',
+                                '${product.document.data()['comparedPrice'].toStringAsFixed(0)}\đ',
                                 style: TextStyle(
                                   decoration: TextDecoration.lineThrough,
                                   fontWeight: FontWeight.bold,
@@ -142,16 +162,16 @@ class ProductCard extends StatelessWidget {
                       ],
                     ),
                   ),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Container(
                         width: MediaQuery.of(context).size.width - 160,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment:
+                          MainAxisAlignment.end,
                           children: [
-                            CounterForCard(document),
+                            CounterForCard(product.document),
                           ],
                         ),
                       ),
