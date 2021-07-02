@@ -8,14 +8,18 @@ class CouponProvider with ChangeNotifier{
   DocumentSnapshot document;
   int discountRate = 0;
 
-  Future<DocumentSnapshot> getCouponDetails(title,sellerId) async{
+    getCouponDetails(title,sellerId) async{
     DocumentSnapshot document = await FirebaseFirestore.instance.collection('coupons').doc(title).get();
     if(document.exists){
+      this.document = document;
+      notifyListeners();
       if(document.data()['sellerId'] == sellerId){
         checkExpiry(document);
+      }else{
+        this.document = null;
+        notifyListeners();
       }
     }
-    return document;
   }
 
   checkExpiry(DocumentSnapshot document){

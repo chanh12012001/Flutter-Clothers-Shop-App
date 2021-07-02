@@ -14,15 +14,22 @@ class CartProvider with ChangeNotifier{
   double saving = 0.0;
   double distance = 0.0;
   bool cod = false;
+  List cartList = [];
 
   Future<double>getCartTotal()async{
     var carTotal = 0.0;
     var saving = 0.0;
+    List _newList = [];
      QuerySnapshot snapshot = await _cart.cart.doc(_cart.user.uid).collection('products').get();
     if(snapshot == null){
       return null;
     }
     snapshot.docs.forEach((doc) {
+      if(!_newList.contains(doc.data())){
+        _newList.add(doc.data());
+        this.cartList = _newList;
+        notifyListeners();
+      }
       carTotal = carTotal + doc.data()['total'];
       saving = saving + ((doc.data()['comparedPrice'] - doc.data()['price']) > 0 ? doc.data()['comparedPrice'] - doc.data()['price'] : 0);
     });

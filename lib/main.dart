@@ -4,6 +4,7 @@ import 'package:grocery_app_flutter/providers/auth_provider.dart';
 import 'package:grocery_app_flutter/providers/cart_provider.dart';
 import 'package:grocery_app_flutter/providers/coupon_provider.dart';
 import 'package:grocery_app_flutter/providers/location_provider.dart';
+import 'package:grocery_app_flutter/providers/orders_provider.dart';
 import 'package:grocery_app_flutter/providers/store_provider.dart';
 import 'package:grocery_app_flutter/screens/cart_screen.dart';
 import 'package:grocery_app_flutter/screens/home_screen.dart';
@@ -41,6 +42,9 @@ void main() async{
       ),
       ChangeNotifierProvider(
         create: (_) => CouponProvider(),
+      ),
+      ChangeNotifierProvider(
+        create: (_) => OrderProvider(),
       ),
     ],
     child: MyApp(),
