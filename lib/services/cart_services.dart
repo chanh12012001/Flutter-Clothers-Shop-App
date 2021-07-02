@@ -68,7 +68,6 @@ class CartServices{
     });
   }
 
-
   Future<String> checkSeller() async{
     final snapshot = await cart.doc(user.uid).get();
     return snapshot.exists ? snapshot.data()['shopName'] : null;

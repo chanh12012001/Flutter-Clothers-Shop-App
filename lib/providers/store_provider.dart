@@ -6,8 +6,7 @@ import 'package:grocery_app_flutter/screens/welcome_screen.dart';
 import 'package:grocery_app_flutter/services/store_services.dart';
 import 'package:grocery_app_flutter/services/user_services.dart';
 
-class StoreProvider with ChangeNotifier {
-  StoreServices _storeServices = StoreServices();
+class StoreProvider with ChangeNotifier{
   UserServices _userServices = UserServices();
   User user = FirebaseAuth.instance.currentUser;
   var userLatitude = 0.0;
@@ -16,30 +15,31 @@ class StoreProvider with ChangeNotifier {
   String selectedStoreId;
   DocumentSnapshot storedetails;
   String distance;
-  String SelectedProductCategory;
-  String SelectedSubCategory;
+  String selectedProductCategory;
+  String selectedSubCategory;
 
-  getSelectedStore(storeDetails, distance){
+
+  getSelectedStore(storeDetails,distance){
     this.storedetails = storeDetails;
     this.distance = distance;
     notifyListeners();
   }
 
   selectedCategory(category){
-    this.SelectedProductCategory = category;
+    this.selectedProductCategory = category;
     notifyListeners();
   }
 
   selectedCategorySub(subCategory){
-    this.SelectedSubCategory = subCategory;
+    this.selectedSubCategory = subCategory;
     notifyListeners();
   }
 
   Future<void> getUserLocationData(context) async {
-    _userServices.getUserById(user.uid).then((result){
+    _userServices.getUserById(user.uid).then((result) {
       if (user != null) {
-        this.userLatitude = result['latitude'];
-        this.userLongitude = result['longitude'];
+        this.userLatitude = result.data()['latitude'];
+        this.userLongitude = result.data()['longitude'];
         notifyListeners();
       } else {
         Navigator.pushReplacementNamed(context, WelcomeScreen.id);
@@ -51,36 +51,25 @@ class StoreProvider with ChangeNotifier {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      return Future.error('Location services are disabled.');
+      return Future.error('Dịch vụ định vị đã bị tắt.');
     }
 
     permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Quyền cập nhật vị trí bị từ chối, chúng tôi không thể cấp quyền yêu cầu. ');
+    }
+
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        return Future.error('Location permissions are denied');
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return Future.error(
+            'Quyền cập nhật vị trí bị từ chối (giá trị thực: $permission).');
       }
     }
-
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
     return await Geolocator.getCurrentPosition();
   }
 }

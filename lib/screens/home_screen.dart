@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:grocery_app_flutter/providers/auth_provider.dart';
-import 'package:grocery_app_flutter/widgets/near_by_store.dart';
-import 'package:grocery_app_flutter/widgets/top_pick_store.dart';
 import 'package:grocery_app_flutter/widgets/image_slider.dart';
 import 'package:grocery_app_flutter/widgets/my_appbar.dart';
+import 'package:grocery_app_flutter/widgets/near_by_store.dart';
+import 'package:grocery_app_flutter/widgets/top_pick_store.dart';
 
 class HomeScreen extends StatefulWidget {
-
   static const String id = 'home-screen';
 
   @override
@@ -20,9 +18,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled){
           return [
-            MyAppBar(),
+            MyAppBar()
           ];
         },
         body: ListView(
@@ -39,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-      )
+      ),
     );
   }
 }

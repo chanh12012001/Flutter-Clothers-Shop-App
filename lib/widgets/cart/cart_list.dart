@@ -6,19 +6,23 @@ import 'package:grocery_app_flutter/widgets/cart/cart_card.dart';
 class CartList extends StatefulWidget {
   final DocumentSnapshot document;
   CartList({this.document});
+
+
   @override
   _CartListState createState() => _CartListState();
 }
 
 class _CartListState extends State<CartList> {
-  CartServices _cart = CartServices();
+
+  CartServices _cart  = CartServices();
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _cart.cart.doc(_cart.user.uid).collection('products').snapshots(),
+      stream: _cart.cart.doc(_cart.user.uid).collection('products').snapshots( ),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
-          return Text('Something went wrong');
+          return Text('Đã xảy ra sự cố');
         }
 
         if(!snapshot.hasData){
@@ -26,6 +30,7 @@ class _CartListState extends State<CartList> {
         }
 
         return new ListView(
+          physics: NeverScrollableScrollPhysics(),
           padding: EdgeInsets.zero,
           shrinkWrap: true,
           children: snapshot.data.docs.map((DocumentSnapshot document) {

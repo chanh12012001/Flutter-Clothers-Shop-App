@@ -19,8 +19,10 @@ class StoreServices{
     return vendors.where(
         'accVerified', isEqualTo: true).orderBy('shopName');
   }
+
   Future<DocumentSnapshot>getShopDetails(sellerUid)async{
     DocumentSnapshot snapshot = await vendors.doc(sellerUid).get();
     return snapshot;
   }
+
 }

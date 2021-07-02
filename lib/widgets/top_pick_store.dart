@@ -7,8 +7,6 @@ import 'package:grocery_app_flutter/services/store_services.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/main_screen.dart';
-
 class TopPickStore extends StatefulWidget {
 
   @override
@@ -17,24 +15,18 @@ class TopPickStore extends StatefulWidget {
 
 class _TopPickStoreState extends State<TopPickStore> {
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
     StoreServices _storeServices = StoreServices();
+
     final _storeData = Provider.of<StoreProvider>(context);
-    // _storeData.getUserLocationData(context);
+    _storeData.getUserLocationData(context);
 
     String getDistance(location) {
       var distance = Geolocator.distanceBetween(
-        _storeData.userLatitude,
-        _storeData.userLongitude,
-        location.latitude,
-        location.longitude,
-      );
-      var distanceInKm = distance/1000; //this is will show in kilometer
+          _storeData.userLatitude,
+          _storeData.userLongitude, location.latitude, location.longitude);
+      var distanceInKm = distance / 1000;
       return distanceInKm.toStringAsFixed(2);
     }
 
@@ -44,42 +36,40 @@ class _TopPickStoreState extends State<TopPickStore> {
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapShot) {
           if (!snapShot.hasData) return Center(child: CircularProgressIndicator());
           List shopDistance = [];
-          for (int i = 0; i <= snapShot.data.docs.length - 1; i++) {
+          for (int i = 0; i <= snapShot.data.docs.length-1; i++) {
             var distance = Geolocator.distanceBetween(
-              _storeData.userLatitude,
-              _storeData.userLongitude,
-              snapShot.data.docs[i]['location'].latitude,
-              snapShot.data.docs[i]['location'].longitude,
-            );
+                _storeData.userLatitude,
+                _storeData.userLongitude,
+                snapShot.data.docs[i]['location'].latitude,
+                snapShot.data.docs[i]['location'].longitude);
             var distanceInKm = distance/1000;
             shopDistance.add(distanceInKm);
           }
           shopDistance.sort();
-          if (shopDistance[0] > 10) {
+          if(shopDistance[0]>10){
             return Container();
           }
-
           return Container(
             height: 200,
             child: Padding(
-              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+              padding: const EdgeInsets.only(left: 8,right: 8),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 10, top: 20),
+                    padding: const EdgeInsets.only(bottom: 10,top: 20),
                     child: Row(
                       children: [
                         SizedBox(
-                          height: 30,
-                          child: Image.asset('images/like.gif'),
-                        ),
+                            height: 30,
+
+                            child: Image.asset('images/like.gif')),
                         Text(
-                          'Lựa chọn hàng đầu cho bạn',
+                          'Lựa chọn hàng đầu cho bạn ',
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
-                            fontSize: 18
+                            fontSize: 18,
                           ),
                         ),
                       ],
@@ -88,15 +78,15 @@ class _TopPickStoreState extends State<TopPickStore> {
                   Flexible(
                     child: ListView(
                       scrollDirection: Axis.horizontal,
-                      children: snapShot.data.docs.map((DocumentSnapshot document){
-                        if (double.parse(getDistance(document['location'])) <= 10) {
+                      children: snapShot.data.docs.map((DocumentSnapshot document) {
+                        if(double.parse(getDistance(document['location']))<=10){
                           return InkWell(
                             onTap: (){
                               _storeData.getSelectedStore(document,getDistance(document['location']));
                               pushNewScreenWithRouteSettings(
                                 context,
-                                settings: RouteSettings(name: VendorHomeScreeen.id),
-                                screen: VendorHomeScreeen(),
+                                settings: RouteSettings(name: VendorHomeScreen.id),
+                                screen: VendorHomeScreen(),
                                 withNavBar: true,
                                 pageTransitionAnimation: PageTransitionAnimation.cupertino,
                               );
@@ -113,12 +103,11 @@ class _TopPickStoreState extends State<TopPickStore> {
                                       height: 80,
                                       child: Card(
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(4),
-                                          child: Image.network(
-                                            document['imageUrl'],
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
+                                            borderRadius: BorderRadius.circular(4),
+                                            child: Image.network(
+                                              document['imageUrl'],
+                                              fit: BoxFit.cover,
+                                            )),
                                       ),
                                     ),
                                     Container(
@@ -135,14 +124,16 @@ class _TopPickStoreState extends State<TopPickStore> {
                                     ),
                                     Text(
                                       '${getDistance(document['location'])}Km',
-                                      style: TextStyle(color: Colors.grey, fontSize: 10,),
-                                    ),
+                                      style:
+                                      TextStyle(color: Colors.grey, fontSize: 10),
+                                    )
                                   ],
                                 ),
                               ),
                             ),
                           );
-                        } else {
+                        }else{
+                          //if no stores
                           return Container();
                         }
                       }).toList(),

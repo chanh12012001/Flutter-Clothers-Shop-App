@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:grocery_app_flutter/providers/store_provider.dart';
 import 'package:grocery_app_flutter/screens/product_list_screen.dart';
@@ -12,12 +13,12 @@ class VendorCategories extends StatefulWidget {
   _VendorCategoriesState createState() => _VendorCategoriesState();
 }
 
-
 class _VendorCategoriesState extends State<VendorCategories> {
 
   ProductServices _services = ProductServices();
 
   List _catList = [];
+
   @override
   void didChangeDependencies() {
     var _store = Provider.of<StoreProvider>(context);
@@ -25,13 +26,14 @@ class _VendorCategoriesState extends State<VendorCategories> {
     FirebaseFirestore.instance
         .collection('products').where('seller.sellerUid',isEqualTo: _store.storedetails['uid'])
         .get()
-        .then((QuerySnapshot querySnapshot) {
+        .then((QuerySnapshot querySnapshot) => {
       querySnapshot.docs.forEach((doc) {
-        setState(() {
-          _catList.add(doc['category']['mainCategory']);
-        });
-
-      });
+        if(mounted){
+          setState(() {
+            _catList.add(doc['category']['mainCategory']);
+          });
+        }
+      }),
     });
 
     super.didChangeDependencies();
@@ -44,10 +46,11 @@ class _VendorCategoriesState extends State<VendorCategories> {
 
 
     return FutureBuilder(
-      future: _services.category.get(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot>snapshot){
+
+        future: _services.category.get(),
+        builder: (BuildContext context,AsyncSnapshot<QuerySnapshot>snapshot){
           if(snapshot.hasError){
-            return Center(child: Text('Có lỗi xảy ra!'));
+            return Center(child: Text('Đã xảy ra sự cố..'));
           }
           if(_catList.length==0){
             return Center(child: CircularProgressIndicator(),);
@@ -62,16 +65,16 @@ class _VendorCategoriesState extends State<VendorCategories> {
                   padding: const EdgeInsets.all(8.0),
                   child: Material(
                     elevation: 4,
+                    borderRadius: BorderRadius.circular(6),
                     child: Container(
                       height: 60,
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(6),
-                        image: DecorationImage(
-                            fit: BoxFit.cover,
-                          image: AssetImage('images/background.jpg')
-                        )
+                          borderRadius: BorderRadius.circular(6),
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage('images/background.jpg')
+                          )
                       ),
                       child: Center(
                         child: Text('Loại sản phẩm',style: TextStyle(
@@ -93,51 +96,48 @@ class _VendorCategoriesState extends State<VendorCategories> {
                 Wrap(
                   direction: Axis.horizontal,
                   children: snapshot.data.docs.map((DocumentSnapshot document){
-                  return _catList.contains(document.data()['name']) ?
-                      InkWell(
-                        onTap: (){
-                          _storeProvider.selectedCategory(document.data()['name']);
-                          _storeProvider.selectedCategorySub(null);
-                          pushNewScreenWithRouteSettings(
-                            context,
-                            settings: RouteSettings(name: ProductListScreen.id),
-                            screen: ProductListScreen(),
-                            withNavBar: true,
-                            pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                          );
-                        },
+                    return _catList.contains(document.data()['name']) ?
+                    InkWell(
+                      onTap: (){
+                        _storeProvider.selectedCategory(document.data()['name']);
+                        _storeProvider.selectedCategorySub(null);
+                        pushNewScreenWithRouteSettings(
+                          context,
+                          settings: RouteSettings(name: ProductListScreen.id),
+                          screen: ProductListScreen(),
+                          withNavBar: true,
+                          pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                        );
+                      },
+                      child: Container(
+                        width: 120,height: 150,
                         child: Container(
-                          width: 120,
-                          height: 150,
-                          child: Container(
-                            decoration: BoxDecoration(
+                          decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(
-                                color: Colors.grey,
-                                width: .5
+                                  color: Colors.grey,
+                                  width: .5
                               )
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Center(
-                                  child: Image.network(document.data()['image']),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8, right: 8),
-                                  child: Text(document.data()['name'],textAlign: TextAlign.center,),
-                                ),
-                              ],
-                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Center(
+                                child: Image.network(document.data()['image']),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8,right: 8),
+                                child: Text(document.data()['name'],textAlign: TextAlign.center,),
+                              ),
+                            ],
                           ),
                         ),
-                      ) : Text('');
+                      ),
+                    ) : Text('');
                   }).toList(),
                 ),
               ],
             ),
           );
-        },
-    );
+        });
   }
 }
