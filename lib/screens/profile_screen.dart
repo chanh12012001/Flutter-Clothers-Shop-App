@@ -27,7 +27,7 @@ class ProfileScreen extends StatelessWidget {
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(
-          'Grocery Store',
+          'CN-Store',
           style: TextStyle(color: kTextBlackColor),
         ),
       ),
@@ -47,7 +47,7 @@ class ProfileScreen extends StatelessWidget {
             Stack(
               children: [
                 Container(
-                  color: Colors.redAccent,
+                  color: Color(0xFF0971B6),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -104,7 +104,7 @@ class ProfileScreen extends StatelessWidget {
                             tileColor: Colors.white,
                             leading: Icon(
                               Icons.location_on,
-                              color: Colors.redAccent,
+                              color: Colors.white,
                             ),
                             title:
                             Text(userDetails.snapshot.data()['location']),
@@ -115,10 +115,10 @@ class ProfileScreen extends StatelessWidget {
                             trailing: SizedBox(
                               width: 80,
                               child: OutlineButton(
-                                borderSide: BorderSide(color: Colors.redAccent),
+                                borderSide: BorderSide(color: Colors.white),
                                 child: Text(
-                                  'Change',
-                                  style: TextStyle(color: Colors.redAccent),
+                                  'Đổi',
+                                  style: TextStyle(color: Colors.white),
                                 ),
                                 onPressed: () {
                                   EasyLoading.show(status: 'Vui lòng đợi...');
@@ -195,12 +195,6 @@ class ProfileScreen extends StatelessWidget {
               },
               leading: Icon(Icons.credit_card),
               title: Text('Quản lý thẻ tín dụng'),
-              horizontalTitleGap: 2,
-            ),
-            Divider(),
-            ListTile(
-              leading: Icon(Icons.comment_outlined),
-              title: Text('Xếp hạng và đánh giá'),
               horizontalTitleGap: 2,
             ),
             Divider(),

@@ -175,7 +175,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 FlatButton(
                   child: RichText(
                     text: TextSpan(
-                      text: 'Đã là khách hàng ? ',
+                      text: 'Đã có tài khoản ? ',
                       style: TextStyle(color: Colors.grey),
                       children: [
                         TextSpan(

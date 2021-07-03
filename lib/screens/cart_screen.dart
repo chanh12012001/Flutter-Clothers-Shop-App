@@ -172,7 +172,7 @@ class _CartScreenState extends State<CartScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '\$${_payable.toStringAsFixed(0)}',
+                          '${_payable.toStringAsFixed(0)}\đ',
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold),

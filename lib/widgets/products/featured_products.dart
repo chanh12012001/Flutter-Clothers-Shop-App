@@ -14,7 +14,7 @@ class FeaturedProducts extends StatelessWidget {
     return FutureBuilder<QuerySnapshot>(
       future: _services.products
           .where('published', isEqualTo: true)
-          .where('collection', isEqualTo: 'Featured Products')
+          .where('collection', isEqualTo: 'Sản phẩm nổi bật')
           .where('seller.sellerUid', isEqualTo: _store.storedetails['uid'])
           .get(),
       //Không có đủ dữ liệu

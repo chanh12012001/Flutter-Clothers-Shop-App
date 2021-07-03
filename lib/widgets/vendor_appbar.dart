@@ -137,7 +137,7 @@ class _VendorAppBarState extends State<VendorAppBar> {
                               width: 5,
                             ),
                             Text(
-                              '(3.5)',
+                              '(4.5)',
                               style: TextStyle(color: Colors.white),
                             )
                           ],

@@ -46,7 +46,6 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => CartProvider(),
         ),
-
         ChangeNotifierProvider(
           create: (_) => CouponProvider(),
         ),
