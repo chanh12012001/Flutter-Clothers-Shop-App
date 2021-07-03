@@ -120,8 +120,7 @@ class ProductCard extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              '\$${document.data()['price'].toStringAsFixed(
-                                  0)}',
+                              '${document.data()['price'].toStringAsFixed(0)}\đ',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             SizedBox(

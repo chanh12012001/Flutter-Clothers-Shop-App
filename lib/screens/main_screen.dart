@@ -85,7 +85,7 @@ class MainScreen extends StatelessWidget {
           duration: Duration(milliseconds: 200),
         ),
         navBarStyle:
-        NavBarStyle.style9,
+        NavBarStyle.style1,
       ),
     );
   }

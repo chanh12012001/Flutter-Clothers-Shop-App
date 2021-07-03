@@ -63,8 +63,8 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             Image.asset('images/logo.png'),
             Text(
-              'Grocery Store',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+              'CN-Store',
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
             ),
           ],
         ),

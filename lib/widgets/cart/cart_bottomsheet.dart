@@ -116,7 +116,7 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '\$${_cartProvider.subTotal.toStringAsFixed(0)}',
+                        '${_cartProvider.subTotal.toStringAsFixed(0)}\đ',
                         style: TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold),
                       ),

@@ -89,7 +89,7 @@ class _MapScreenState extends State<MapScreen> {
               child: Container(
                 height: 50,
                 margin: EdgeInsets.only(bottom: 40),
-                child: Image.asset('images/marker.png',color: Colors.black,),
+                child: Image.asset('images/marker.png',color: Colors.red,),
               ),
             ),
             Center(

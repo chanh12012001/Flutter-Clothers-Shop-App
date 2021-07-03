@@ -37,7 +37,7 @@ class _MyOrdersState extends State<MyOrders> {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text(
-          'My Orders',
+          'Đơn hàng của tôi',
           style: TextStyle(color: kTextBlackColor),
         ),
         centerTitle: true,
@@ -85,7 +85,7 @@ class _MyOrdersState extends State<MyOrders> {
                   .snapshots(),
               builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {
-                  return Text('Đã xả ra sự cố');
+                  return Text('Đã xảy ra sự cố');
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -141,8 +141,7 @@ class _MyOrdersState extends State<MyOrders> {
                                     ),
                                   ),
                                   Text(
-                                    'Tổng: \$${document.data()['total']
-                                        .toStringAsFixed(0)}',
+                                    'Tổng: ${document.data()['total'].toStringAsFixed(0)}\đ',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,

@@ -85,28 +85,6 @@ class _MyAppBarState extends State<MyAppBar> {
           ],
         ),
       ),
-      // bottom: PreferredSize(
-      //   preferredSize: Size.fromHeight(56),
-      //   child: Padding(
-      //     padding: const EdgeInsets.all(10.0),
-      //     child: TextField(
-      //       decoration: InputDecoration(
-      //         hintText: 'Tìm kiếm',
-      //         prefixIcon: Icon(
-      //           Icons.search,
-      //           color: Colors.grey,
-      //         ),
-      //         border: OutlineInputBorder(
-      //           borderRadius: BorderRadius.circular(3),
-      //           borderSide: BorderSide.none,
-      //         ),
-      //         contentPadding: EdgeInsets.zero,
-      //         filled: true,
-      //         fillColor: Colors.white,
-      //       ),
-      //     ),
-      //   ),
-      // ),
     );
   }
 }
