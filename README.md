@@ -97,7 +97,23 @@
 
 * flutter - https://github.com/flutter/flutter
 
-* flutter-navigation - https://github.com/react-navigation/react-navigation
+* google maps platform - https://console.cloud.google.com/
+
+* geolocator - https://pub.dev/packages/geolocator
+
+* persistent bottom nar bar -  https://pub.dev/packages/persistent_bottom_nav_bar
+
+* map launcher - https://pub.dev/packages/map_launcher
+
+* toggle bar - https://pub.dev/packages/toggle_bar
+
+* search page - https://pub.dev/packages/search_page
+
+* carousel slider - https://pub.dev/packages/carousel_slider
+
+* stripe payment - https://pub.dev/packages/stripe_payment
+
+* flutter slidable - https://pub.dev/packages/flutter_slidable
 
 ## Tác giả
 Phạm Văn Chánh - 19521274@gm.uit.edu.vn
